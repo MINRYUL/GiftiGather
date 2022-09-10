@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -617,6 +617,8 @@
 			isa = PBXProject;
 			attributes = {
 				ORGANIZATIONNAME = GiftiGather;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 87FA5BF0B4D56B42B4705190 /* Build configuration list for PBXProject "GiftiGather" */;
 			compatibilityVersion = "Xcode 13.0";

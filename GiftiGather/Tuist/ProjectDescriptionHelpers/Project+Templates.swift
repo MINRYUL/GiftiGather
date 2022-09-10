@@ -6,81 +6,73 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 
 extension Project {
-  public static let projectName: String = "GiftiGather"
-  public static let bundleId: String = "com.minryul"
+  private enum Layer: String {
+    case presentaion = "Presentation"
+    case domain = "Domain"
+    case data = "Data"
+    case core = "Core"
+  }
   
   private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "13.0", devices: [.iphone])
   
-    /// Helper function to create the Project for this ExampleApp
-    public static func app(name: String, platform: Platform, additionalTargets: [String]) -> Project {
-        var targets = makeAppTargets(name: name,
-                                     platform: platform,
-                                     dependencies: additionalTargets.map { TargetDependency.target(name: $0) })
-        targets += additionalTargets.flatMap({ makeFrameworkTargets(name: $0, platform: platform) })
-        return Project(name: name,
-                       organizationName: "tuist.io",
-                       targets: targets)
-    }
-
-    // MARK: - Private
-
-    /// Helper function to create a framework target and an associated unit test target
-    private static func makeFrameworkTargets(name: String, platform: Platform) -> [Target] {
-        let sources = Target(name: name,
-                platform: platform,
-                product: .framework,
-                bundleId: "io.tuist.\(name)",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Sources/**"],
-                resources: [],
-                dependencies: [])
-        let tests = Target(name: "\(name)Tests",
-                platform: platform,
-                product: .unitTests,
-                bundleId: "io.tuist.\(name)Tests",
-                infoPlist: .default,
-                sources: ["Targets/\(name)/Tests/**"],
-                resources: [],
-                dependencies: [.target(name: name)])
-        return [sources, tests]
-    }
-
-    /// Helper function to create the application target and the unit test target.
-    private static func makeAppTargets(name: String, platform: Platform, dependencies: [TargetDependency]) -> [Target] {
-        let platform: Platform = platform
-        let infoPlist: [String: InfoPlist.Value] = [
-            "CFBundleShortVersionString": "1.0",
-            "CFBundleVersion": "1",
-            "UIMainStoryboardFile": "",
-            "UILaunchStoryboardName": "LaunchScreen"
-            ]
-
-        let mainTarget = Target(
-            name: name,
-            platform: platform,
-            product: .app,
-            bundleId: "io.tuist.\(name)",
-            infoPlist: .extendingDefault(with: infoPlist),
-            sources: ["Targets/\(name)/Sources/**"],
-            resources: ["Targets/\(name)/Resources/**"],
-            dependencies: dependencies
+  public static func giftiGatherApp(
+    name: String,
+    bundleId: String,
+    platform: Platform
+  ) -> Project {
+    return Project(
+      name: name,
+      organizationName: name,
+      targets: [
+        [Project.makeGiftiGatherAppTarget(
+          name: name,
+          platform: platform,
+          bundleId: bundleId,
+          dependencies: [
+            .target(name: Layer.presentaion.rawValue),
+            .target(name: Layer.core.rawValue)
+          ]
+        )],
+        Project.makeGiftiGatherFrameworkTargets(
+          name: Layer.presentaion.rawValue,
+          bundleId: bundleId,
+          platform: .iOS,
+          dependencies: [
+            .target(name: Layer.domain.rawValue),
+            .target(name: Layer.core.rawValue)
+          ]
+        ),
+        Project.makeGiftiGatherFrameworkTargets(
+          name: Layer.domain.rawValue,
+          bundleId: bundleId,
+          platform: .iOS,
+          dependencies: [
+            .target(name: Layer.core.rawValue)
+          ]
+        ),
+        Project.makeGiftiGatherFrameworkTargets(
+          name: Layer.data.rawValue,
+          bundleId: bundleId,
+          platform: .iOS,
+          dependencies: [
+            .target(name: Layer.domain.rawValue)
+          ]
+        ),
+        Project.makeGiftiGatherFrameworkTargets(
+          name: Layer.core.rawValue,
+          bundleId: bundleId,
+          platform: .iOS,
+          dependencies: [
+          ]
         )
-
-        let testTarget = Target(
-            name: "\(name)Tests",
-            platform: platform,
-            product: .unitTests,
-            bundleId: "io.tuist.\(name)Tests",
-            infoPlist: .default,
-            sources: ["Targets/\(name)/Tests/**"],
-            dependencies: [
-                .target(name: "\(name)")
-        ])
-        return [mainTarget, testTarget]
-    }
+      ].flatMap { $0 }
+    )
+  }
+  
   
   public static func makeGiftiGatherFrameworkTargets(
     name: String,
+    bundleId: String,
     platform: Platform,
     dependencies: [TargetDependency]) -> [Target] {
       let sources = Target(
@@ -114,8 +106,11 @@ extension Project {
     }
   
   public static func makeGiftiGatherAppTarget(
+    name: String,
     platform: Platform,
-    dependencies: [TargetDependency]) -> Target {
+    bundleId: String,
+    dependencies: [TargetDependency]
+  ) -> Target {
       
       let platform = platform
       let infoPlist: [String: InfoPlist.Value] = [
@@ -125,14 +120,14 @@ extension Project {
           "UILaunchStoryboardName": "LaunchScreen"
       ]
       
-      return .init(name: "\(projectName)",
+      return .init(name: name,
                    platform: platform,
                    product: .app,
-                   bundleId: "\(bundleId)",
+                   bundleId: bundleId,
                    deploymentTarget: deploymentTarget,
                    infoPlist: .extendingDefault(with: infoPlist),
-                   sources: ["Targets/\(projectName)/Sources/**"],
-                   resources: ["Targets/\(projectName)/Resources/**"],
+                   sources: ["Targets/\(name)/Sources/**"],
+                   resources: ["Targets/\(name)/Resources/**"],
 //                   entitlements: "./\(projectName).entitlements",
                    dependencies: dependencies
       )
