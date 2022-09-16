@@ -11,7 +11,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     guard let homeViewController = HomeViewController.instantiate(
     ) else { return true }
     
-    window?.rootViewController = homeViewController
+    let navigationViewController = UINavigationController(rootViewController: homeViewController)
+    
+    window?.rootViewController = navigationViewController
     window?.makeKeyAndVisible()
     
     return true

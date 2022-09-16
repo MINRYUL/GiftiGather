@@ -13,6 +13,7 @@ final class HomeViewController: BaseViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.title = "Home".localized()
     self.view.backgroundColor = .cyan
   }
 }

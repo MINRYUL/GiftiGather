@@ -30,8 +30,6 @@ final class Injection {
   private func buildContainer() -> Container {
     let container = Container()
     
-    self.buildHomeContainer(container: container)
-    
     return container
   }
 }
