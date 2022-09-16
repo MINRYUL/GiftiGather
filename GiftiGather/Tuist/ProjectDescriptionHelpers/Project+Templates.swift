@@ -11,6 +11,7 @@ extension Project {
     case domain = "Domain"
     case data = "Data"
     case core = "Core"
+    case diContainer = "DIContainer"
   }
   
   private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "13.0", devices: [.iphone])
@@ -30,7 +31,9 @@ extension Project {
           bundleId: bundleId,
           dependencies: [
             .target(name: Layer.presentaion.rawValue),
-            .target(name: Layer.core.rawValue)
+            .target(name: Layer.core.rawValue),
+            .external(name: "RxSwift"),
+            .external(name: "RxCocoa")
           ]
         )],
         Project.makeGiftiGatherFrameworkTargets(
@@ -39,7 +42,8 @@ extension Project {
           platform: .iOS,
           dependencies: [
             .target(name: Layer.domain.rawValue),
-            .target(name: Layer.core.rawValue)
+            .target(name: Layer.core.rawValue),
+            .external(name: "RxSwift"),
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(
@@ -55,7 +59,8 @@ extension Project {
           bundleId: bundleId,
           platform: .iOS,
           dependencies: [
-            .target(name: Layer.domain.rawValue)
+            .target(name: Layer.domain.rawValue),
+            .external(name: "RxSwift")
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(
@@ -63,6 +68,14 @@ extension Project {
           bundleId: bundleId,
           platform: .iOS,
           dependencies: [
+          ]
+        ),
+        Project.makeGiftiGatherFrameworkTargets(
+          name: Layer.diContainer.rawValue,
+          bundleId: bundleId,
+          platform: .iOS,
+          dependencies: [
+            .external(name: "Swinject")
           ]
         )
       ].flatMap { $0 }
