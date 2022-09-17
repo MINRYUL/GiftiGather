@@ -16,7 +16,8 @@ public final class Injection {
   public var container: Container {
     get {
       guard let container = _container else {
-        let container = buildContainer()
+        let container = Container()
+        _container = container
         return container
       }
       return container
@@ -26,13 +27,7 @@ public final class Injection {
     }
   }
   private var _container: Container?
-  
-  private func buildContainer() -> Container {
-    let container = Container()
-    
-    return container
-  }
-  
+
   public func dependencyInjected(_ closer: (Container) -> (Container)) {
     self._container = closer(container)
   }

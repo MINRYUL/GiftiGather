@@ -12,7 +12,6 @@ class BaseViewController: UIViewController {
     
     static func instantiate(
     ) -> BaseViewController? {
-        
         return Self()
     }
 }

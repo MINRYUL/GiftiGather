@@ -8,6 +8,7 @@
 
 import Foundation
 import DIContainer
+import Presentation
 
 import Swinject
 
@@ -20,6 +21,10 @@ extension Injection {
   
   func injectionHomeContainer(_ injection: Injection) {
     injection.dependencyInjected() { container in
+      
+      container.register(HomeViewModel.self) { _ in
+        return DefaultHomeViewModel()
+      }
       
       return container
     }
