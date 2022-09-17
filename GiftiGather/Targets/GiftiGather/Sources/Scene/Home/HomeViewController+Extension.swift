@@ -38,21 +38,22 @@ extension HomeViewController {
           let item = NSCollectionLayoutItem(
             layoutSize: .init(
               widthDimension: .estimated(100),
-              heightDimension: .estimated(100)
+              heightDimension: .absolute(40)
             )
           )
           item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
           
-          let group = NSCollectionLayoutGroup.horizontal(
+          let group = NSCollectionLayoutGroup.vertical(
             layoutSize: .init(
-              widthDimension: .fractionalWidth(1),
-              heightDimension: .estimated(100)
+              widthDimension: .estimated(100),
+              heightDimension: .estimated(30)
             ), subitems: [item]
           )
+          group.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
           
           let section = NSCollectionLayoutSection(group: group)
-          section.orthogonalScrollingBehavior = .none
-          section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+          section.orthogonalScrollingBehavior = .continuous
+          section.contentInsets = .init(top: 10, leading: 10, bottom: 10, trailing: 10)
           return section
           
         case .photos:

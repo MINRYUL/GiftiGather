@@ -8,10 +8,13 @@
 
 import UIKit
 
+import RxSwift
+
 class BaseViewController: UIViewController {
-    
-    static func instantiate(
-    ) -> BaseViewController? {
-        return Self()
-    }
+  var disposeBag: DisposeBag = DisposeBag()
+  
+  static func instantiate(
+  ) -> BaseViewController? {
+    return Self()
+  }
 }

@@ -14,14 +14,15 @@ import RxSwift
 import RxCocoa
 
 enum HomeSection: Int, CaseIterable {
-    case filter, photos
+  case filter, photos, nodata
 }
 
 final class HomeViewController: BaseViewController {
-  
+  //MARK: - Typealias
   typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, AnyHashable>
   typealias SourceSnapshot = NSDiffableDataSourceSnapshot<HomeSection, AnyHashable>
   
+  //MARK: - View
   lazy var collectionView: UICollectionView = {
     let flowLayout = UICollectionViewFlowLayout()
     let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: flowLayout)
@@ -31,6 +32,7 @@ final class HomeViewController: BaseViewController {
   
   private var _dataSource: HomeDataSource?
   
+  //MARK: - Injection
   @Injected private var _viewModel: HomeViewModel
   
   override func viewDidLoad() {
@@ -39,22 +41,26 @@ final class HomeViewController: BaseViewController {
     self.configureUI()
     
     self._configureRegister()
+    self._configureDataSource()
     self._configureData()
     
-    self._configureDataSource()
+    self._bindFilterDataSource()
+    self._bindPhotoDataSource()
+    self._bindNoDataSource()
   }
   
   //MARK: - Configure
   private func _configureRegister() {
     HomeFilterCell.register(to: self.collectionView)
     HomePhotoCell.register(to: self.collectionView)
+    NoDataCollectionViewCell.register(to: self.collectionView)
   }
   
   private func _configureData() {
-      var snapshot = SourceSnapshot()
-      HomeSection.allCases.forEach {
-          snapshot.appendSections([$0])
-      }
+    var snapshot = SourceSnapshot()
+    HomeSection.allCases.forEach {
+      snapshot.appendSections([$0])
+    }
     self._dataSource?.apply(snapshot, animatingDifferences: true)
   }
   
@@ -66,7 +72,11 @@ final class HomeViewController: BaseViewController {
             guard let cell = collectionView.dequeueReusableCell(
               withReuseIdentifier: HomeFilterCell.identifier,
               for: indexPath
-            ) as? HomeFilterCell else  { return UICollectionViewCell() }
+            ) as? HomeFilterCell,
+                  let item = item as? HomeFilterCellModel
+            else  { return UICollectionViewCell() }
+            
+            cell.display(cellModel: item)
             
             return cell
             
@@ -74,7 +84,11 @@ final class HomeViewController: BaseViewController {
             guard let cell = collectionView.dequeueReusableCell(
               withReuseIdentifier: HomePhotoCell.identifier,
               for: indexPath
-            ) as? HomePhotoCell else { return UICollectionViewCell() }
+            ) as? HomePhotoCell,
+                  let item = item as? HomePhotoCellModel
+            else  { return UICollectionViewCell() }
+            
+            cell.display(cellModel: item)
             
             return cell
             
@@ -90,4 +104,40 @@ final class HomeViewController: BaseViewController {
 
 //MARK: - Output Binding
 extension HomeViewController {
+  private func _bindFilterDataSource() {
+    self._viewModel.output.filterDataSource
+      .drive(onNext: { dataSource in
+        self._sectionSnapShotApply(section: .filter, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindPhotoDataSource() {
+    self._viewModel.output.photoDataSource
+      .drive(onNext: { dataSource in
+        self._sectionSnapShotApply(section: .photos, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindNoDataSource() {
+    self._viewModel.output.noDataSource
+      .drive(onNext: { dataSource in
+        self._sectionSnapShotApply(section: .nodata, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+}
+
+//MARK: - Apply
+extension HomeViewController {
+  private func _sectionSnapShotApply(section: HomeSection, item: [AnyHashable]) {
+    DispatchQueue.global().sync {
+      guard var snapshot = self._dataSource?.snapshot() else { return }
+      item.forEach {
+        snapshot.appendItems([$0], toSection: section)
+      }
+      self._dataSource?.apply(snapshot, animatingDifferences: true)
+    }
+  }
 }

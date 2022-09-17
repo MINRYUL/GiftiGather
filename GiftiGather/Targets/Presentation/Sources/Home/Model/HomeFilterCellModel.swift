@@ -1,5 +1,5 @@
 //
-//  HomePhotosCell.swift
+//  HomeFilterCellModel.swift
 //  GiftiGather
 //
 //  Created by 김민창 on 2022/09/17.
@@ -8,9 +8,7 @@
 
 import Foundation
 
-final class HomePhotoCell: BaseCollectionViewCell {
-  override func viewDidInit() {
-    super.viewDidInit()
-    
-  }
+public struct HomeFilterCellModel: CellModel {
+  public var identity = UUID()
+  public let title: String
 }
