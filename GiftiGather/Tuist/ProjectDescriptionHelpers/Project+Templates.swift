@@ -134,7 +134,9 @@ extension Project {
           "CFBundleShortVersionString": "1.0",
           "CFBundleVersion": "1",
           "UIMainStoryboardFile": "",
-          "UILaunchStoryboardName": "LaunchScreen"
+          "UILaunchStoryboardName": "LaunchScreen",
+          "NSPhotoLibraryUsageDescription": "Request permission to access the photo album",
+          "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
       ]
       
       return .init(name: name,

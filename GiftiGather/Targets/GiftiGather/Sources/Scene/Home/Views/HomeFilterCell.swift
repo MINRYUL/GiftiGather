@@ -14,8 +14,8 @@ final class HomeFilterCell: BaseCollectionViewCell {
   lazy private var _containerView: UIView = {
     let view = UIView()
     view.translatesAutoresizingMaskIntoConstraints = false
-    view.backgroundColor = .systemBackground
-    view.layer.cornerRadius = 15
+    view.backgroundColor = .background
+    view.layer.cornerRadius = 14
     view.layer.borderColor = UIColor.systemGray.cgColor
     view.layer.borderWidth = 1
     view.clipsToBounds = true
@@ -50,7 +50,7 @@ extension HomeFilterCell {
     NSLayoutConstraint.activate([
       self._containerView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
       self._containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-      self._containerView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -4),
+      self._containerView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -5),
       self._containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
     ])
     

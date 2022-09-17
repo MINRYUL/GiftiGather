@@ -16,4 +16,8 @@ extension UIColor {
   static var navigationBackground: UIColor {
     return UIColor(named: "NavigationBackground") ?? .clear
   }
+  
+  static var selectedBackground: UIColor {
+    return UIColor(named: "SelectedBackground") ?? .clear
+  }
 }

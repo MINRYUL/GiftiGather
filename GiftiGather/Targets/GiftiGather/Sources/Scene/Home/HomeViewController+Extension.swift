@@ -11,10 +11,9 @@ import UIKit
 extension HomeViewController {
   func configureUI() {
     self.navigationController?.navigationBar.prefersLargeTitles = true
-    self.navigationController?.navigationBar.barTintColor = .navigationBackground
     self.title = "Home".localized()
     
-    self.view.backgroundColor = .background
+    self.view.backgroundColor = .systemBackground
     self.view.addSubview(self.collectionView)
     
     self._configureCollectionView()

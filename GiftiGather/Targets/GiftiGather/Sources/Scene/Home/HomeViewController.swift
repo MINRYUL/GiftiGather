@@ -49,6 +49,12 @@ final class HomeViewController: BaseViewController {
     self._bindNoDataSource()
   }
   
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(true)
+    
+    self.showToast("토스트를 보여주자")
+  }
+  
   //MARK: - Configure
   private func _configureRegister() {
     HomeFilterCell.register(to: self.collectionView)
