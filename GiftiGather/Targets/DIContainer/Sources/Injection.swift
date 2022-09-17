@@ -10,10 +10,10 @@ import Foundation
 
 import Swinject
 
-final class Injection {
-  static let shared = Injection()
+public final class Injection {
+  static public let shared = Injection()
   
-  var container: Container {
+  public var container: Container {
     get {
       guard let container = _container else {
         let container = buildContainer()
@@ -32,12 +32,16 @@ final class Injection {
     
     return container
   }
+  
+  public func dependencyInjected(_ closer: (Container) -> (Container)) {
+    self._container = closer(container)
+  }
 }
 
-@propertyWrapper struct Injected<Dependency> {
-  let wrappedValue: Dependency
+@propertyWrapper public struct Injected<Dependency> {
+  public let wrappedValue: Dependency
   
-  init() {
+  public init() {
     self.wrappedValue =
     Injection.shared.container.resolve(Dependency.self)!
   }

@@ -30,8 +30,10 @@ extension Project {
           platform: platform,
           bundleId: bundleId,
           dependencies: [
+            .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.presentaion.rawValue),
             .target(name: Layer.core.rawValue),
+            .external(name: "Swinject"),
             .external(name: "RxSwift"),
             .external(name: "RxCocoa")
           ]
@@ -41,6 +43,7 @@ extension Project {
           bundleId: bundleId,
           platform: .iOS,
           dependencies: [
+            .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.domain.rawValue),
             .target(name: Layer.core.rawValue),
             .external(name: "RxSwift"),
@@ -51,6 +54,7 @@ extension Project {
           bundleId: bundleId,
           platform: .iOS,
           dependencies: [
+            .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.core.rawValue)
           ]
         ),
