@@ -14,10 +14,8 @@ import RxSwift
 import RxCocoa
 
 final class PhotosManager {
+  //MARK: - Type Property
   static var shared = PhotosManager()
-  
-  //MARK: - Property
-  private let _allImages = PHAsset.fetchAssets(with: .image, options: nil)
   
   //MARK: - Output
   let gifticonFetchProgress: Driver<Double?>
@@ -31,17 +29,18 @@ final class PhotosManager {
     self.gifticonFetchProgress = self._gifticonFetchProgress.asDriver(onErrorJustReturn: nil)
   }
   
-  func startFetchGifticon() -> Observable<[String]> {
+  func fetchGifticon() -> Observable<[String]> {
     self._gifticonFetchProgress.onNext(0)
     
     return Observable.create() { emitter in
       let dispatchGroup = DispatchGroup()
+      let allImageAssets = PHAsset.fetchAssets(with: .image, options: nil)
       var existBarcodeImageIdentifiers = [String]()
       var checkImageCount: Double = 0
       dispatchGroup.enter()
       
-      for i in 0..<self._allImages.count {
-        let imageAsset = self._allImages[i]
+      for i in 0..<allImageAssets.count {
+        let imageAsset = allImageAssets[i]
         
         PhotosManager.fetchImageWithIdentifier(
           imageAsset.localIdentifier,
@@ -56,7 +55,7 @@ final class PhotosManager {
               let request = VNDetectBarcodesRequest { [unowned self] (request, error) in
                 dispatchGroup.leave()
                 checkImageCount += 1
-                self._gifticonFetchProgress.onNext(checkImageCount/Double(self._allImages.count))
+                self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
                 if let _ = error as NSError? {
                   ///이미지 내 바코드 검색 실패
                   return
@@ -89,13 +88,10 @@ final class PhotosManager {
       return Disposables.create()
     }
   }
-  
-  class func fetchAssetsWithIdentifiers(
-    _ identifiers: [String], options: PHFetchOptions?
-  ) -> PHFetchResult<PHAsset> {
-    return PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: options)
-  }
-  
+}
+
+//MARK: - Type Method
+extension PhotosManager {
   ///targetSize: PHImageManagerMaximumSize 원본 사이즈 fetch
   class func fetchImageWithIdentifier(
     _ identifier: String, targetSize: CGSize
