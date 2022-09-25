@@ -12,7 +12,6 @@ import RxSwift
 import RxCocoa
 
 public struct HomeViewModelInput {
-  
 }
 
 public struct HomeViewModelOutput {

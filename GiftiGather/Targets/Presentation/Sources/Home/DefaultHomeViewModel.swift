@@ -35,6 +35,8 @@ public struct DefaultHomeViewModel: HomeViewModel {
     )
     
     self._makeMockData()
+    
+    
   }
   
   private func _makeMockData() {
@@ -70,36 +72,21 @@ public struct DefaultHomeViewModel: HomeViewModel {
     ])
     
     self._photoDataSource.onNext([
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID()),
-      HomePhotoCellModel(identity: UUID())
+      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
+      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
+      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
+      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001")
     ])
   }
+  
+}
+
+//MARK: - Input Binding
+extension DefaultHomeViewModel {
+  
+}
+
+//MARK: - Output Binding
+extension DefaultHomeViewModel {
   
 }

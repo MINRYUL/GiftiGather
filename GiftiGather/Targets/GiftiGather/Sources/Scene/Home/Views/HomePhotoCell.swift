@@ -6,19 +6,26 @@
 //  Copyright © 2022 GiftiGather. All rights reserved.
 //
 
-import Foundation
 import Presentation
 import UIKit
+import Photos
+
+import RxSwift
 
 final class HomePhotoCell: BaseCollectionViewCell {
   private var _imageView: UIImageView = {
     let imageView = UIImageView()
     imageView.translatesAutoresizingMaskIntoConstraints = false
+    imageView.contentMode = .scaleAspectFill
     imageView.layer.cornerRadius = 10
     imageView.clipsToBounds = true
     imageView.backgroundColor = .systemGray2
     return imageView
   }()
+  
+  private var _disposeBag = DisposeBag()
+  
+  private var _photoIdentifier: String?
   
   override func viewDidInit() {
     super.viewDidInit()
@@ -27,6 +34,20 @@ final class HomePhotoCell: BaseCollectionViewCell {
   }
   
   func display(cellModel: HomePhotoCellModel) {
+    self._photoIdentifier = cellModel.photoLocalIentifier
+    PhotosManager.fetchImageWithIdentifier(
+      cellModel.photoLocalIentifier,
+      targetSize: PHImageManagerMaximumSize
+    ).asDriver(onErrorJustReturn: (nil, cellModel.photoLocalIentifier))
+      .map { [weak self] (image, identifier) -> UIImage? in
+        switch identifier == self?._photoIdentifier {
+          case true: return image
+          case false: return nil
+        }
+      }
+      .compactMap { $0 }
+      .drive(self._imageView.rx.image)
+      .disposed(by: self._disposeBag)
     
   }
 }

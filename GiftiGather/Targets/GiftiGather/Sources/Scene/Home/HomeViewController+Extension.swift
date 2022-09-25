@@ -15,6 +15,9 @@ extension HomeViewController {
     
     self.view.backgroundColor = .systemBackground
     self.view.addSubview(self.collectionView)
+    self.view.addSubview(self.addView)
+    self.addView.addSubview(self.addImage)
+//    self.addView.addSubview(self.progressView)
     
     self._configureCollectionView()
     self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
@@ -28,6 +31,27 @@ extension HomeViewController {
       self.collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
       self.collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
     ])
+    
+    NSLayoutConstraint.activate([
+      self.addView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
+      self.addView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+      self.addView.heightAnchor.constraint(equalToConstant: 50),
+      self.addView.widthAnchor.constraint(equalToConstant: 50)
+    ])
+    
+    NSLayoutConstraint.activate([
+      self.addImage.centerXAnchor.constraint(equalTo: self.addView.centerXAnchor),
+      self.addImage.centerYAnchor.constraint(equalTo: self.addView.centerYAnchor),
+      self.addImage.heightAnchor.constraint(equalToConstant: 25),
+      self.addImage.widthAnchor.constraint(equalToConstant: 25)
+    ])
+    
+//    NSLayoutConstraint.activate([
+//      self.progressView.centerXAnchor.constraint(equalTo: self.addView.centerXAnchor),
+//      self.progressView.centerYAnchor.constraint(equalTo: self.addView.centerYAnchor),
+//      self.progressView.heightAnchor.constraint(equalToConstant: 30),
+//      self.progressView.widthAnchor.constraint(equalToConstant: 30)
+//    ])
   }
   
   private func _configureCompositionalLayout() -> UICollectionViewCompositionalLayout {
@@ -58,7 +82,7 @@ extension HomeViewController {
         case .photos:
           let item = NSCollectionLayoutItem(
             layoutSize: .init(
-              widthDimension: .fractionalWidth(1/3),
+              widthDimension: .fractionalWidth(0.5),
               heightDimension: .fractionalHeight(1.0)
             )
           )
@@ -66,7 +90,7 @@ extension HomeViewController {
           let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(
               widthDimension: .fractionalWidth(1.0),
-              heightDimension: .fractionalWidth(1/3)
+              heightDimension: .fractionalWidth(0.5)
             ),
             subitems: [item]
           )

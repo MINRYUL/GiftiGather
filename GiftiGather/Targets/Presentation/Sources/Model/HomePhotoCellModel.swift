@@ -9,5 +9,6 @@
 import Foundation
 
 public struct HomePhotoCellModel: CellModel {
-  public var identity = UUID()
+  public var identity: UUID
+  public var photoLocalIentifier: String
 }

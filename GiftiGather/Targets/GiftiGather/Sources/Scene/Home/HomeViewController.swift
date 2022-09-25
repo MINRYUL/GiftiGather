@@ -10,6 +10,8 @@ import UIKit
 import DIContainer
 import Presentation
 
+import Photos
+
 import RxSwift
 import RxCocoa
 
@@ -27,10 +29,42 @@ final class HomeViewController: BaseViewController {
     let flowLayout = UICollectionViewFlowLayout()
     let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: flowLayout)
     collectionView.translatesAutoresizingMaskIntoConstraints = false
+    collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 70, right: 0)
     return collectionView
   }()
   
+  lazy var addView: UIView = {
+    let view = UIView()
+    view.translatesAutoresizingMaskIntoConstraints = false
+    view.backgroundColor = .systemBlue
+    view.layer.cornerRadius = 25
+    view.clipsToBounds = true
+    return view
+  }()
+  
+  lazy var addImage: UIView = {
+    let imageView = UIImageView()
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    imageView.image = UIImage(systemName: "plus")
+    imageView.tintColor = .white
+    return imageView
+  }()
+  
+  
   private var _dataSource: HomeDataSource?
+  
+  private var _status: HomeViewStatus = .none {
+    didSet {
+      switch self._status {
+        case .none:
+//          self.progressView.isHidden = true
+          self.addImage.isHidden = false
+        case .progress:
+//          self.progressView.isHidden = false
+          self.addImage.isHidden = true
+      }
+    }
+  }
   
   //MARK: - Injection
   @Injected private var _viewModel: HomeViewModel
@@ -43,16 +77,24 @@ final class HomeViewController: BaseViewController {
     self._configureRegister()
     self._configureDataSource()
     self._configureData()
+    self._configureGesture()
     
     self._bindFilterDataSource()
     self._bindPhotoDataSource()
     self._bindNoDataSource()
+    
+    self._bindGifticonFetchProgress()
   }
   
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(true)
-    
-    self.showToast("토스트를 보여주자")
+  //MARK: - Action
+  @objc private func _addImageAction() {
+    switch self._status {
+      case .none:
+        self._fetchGifticon()
+        self._status = .progress
+        
+      case .progress: break
+    }
   }
   
   //MARK: - Configure
@@ -60,14 +102,6 @@ final class HomeViewController: BaseViewController {
     HomeFilterCell.register(to: self.collectionView)
     HomePhotoCell.register(to: self.collectionView)
     NoDataCollectionViewCell.register(to: self.collectionView)
-  }
-  
-  private func _configureData() {
-    var snapshot = SourceSnapshot()
-    HomeSection.allCases.forEach {
-      snapshot.appendSections([$0])
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
   }
   
   private func _configureDataSource() {
@@ -106,6 +140,19 @@ final class HomeViewController: BaseViewController {
       self._dataSource = dataSource
       collectionView.dataSource = dataSource
   }
+  
+  private func _configureData() {
+    var snapshot = SourceSnapshot()
+    HomeSection.allCases.forEach {
+      snapshot.appendSections([$0])
+    }
+    self._dataSource?.apply(snapshot, animatingDifferences: true)
+  }
+  
+  private func _configureGesture() {
+    let addGesture = UITapGestureRecognizer(target: self, action: #selector(_addImageAction))
+    self.addView.addGestureRecognizer(addGesture)
+  }
 }
 
 //MARK: - Output Binding
@@ -130,6 +177,25 @@ extension HomeViewController {
     self._viewModel.output.noDataSource
       .drive(onNext: { dataSource in
         self._sectionSnapShotApply(section: .nodata, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindGifticonFetchProgress() {
+    PhotosManager.shared.gifticonFetchProgress
+      .compactMap { $0 }
+      .drive(onNext: { [weak self] progress in
+        
+        print(progress)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _fetchGifticon() {
+    PhotosManager.shared.fetchGifticon()
+      .asDriver(onErrorJustReturn: [])
+      .drive(onNext: { gifticonIdentifier in
+        gifticonIdentifier.forEach { print($0) }
       })
       .disposed(by: disposeBag)
   }

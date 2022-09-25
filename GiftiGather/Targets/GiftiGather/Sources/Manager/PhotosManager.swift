@@ -41,40 +41,53 @@ final class PhotosManager {
       
       for i in 0..<allImageAssets.count {
         let imageAsset = allImageAssets[i]
+        dispatchGroup.enter()
         
         PhotosManager.fetchImageWithIdentifier(
           imageAsset.localIdentifier,
-          targetSize: CGSize(width: 360, height: 360)
+          targetSize: PHImageManagerMaximumSize
         ).asObservable()
-          .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+          .observe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
           .subscribe(onNext : { (image, identifier) in
             guard let image = image,
-                  let cgImage = image.cgImage else { return }
+                  let ciImage = CIImage(image: image) else { return }
             
             var _vnBarCodeDetectionRequest: VNDetectBarcodesRequest {
               let request = VNDetectBarcodesRequest { [unowned self] (request, error) in
-                dispatchGroup.leave()
-                checkImageCount += 1
-                self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
                 if let _ = error as NSError? {
                   ///이미지 내 바코드 검색 실패
+                  dispatchGroup.leave()
                   return
                 } else {
-                  guard let _ = request.results as? [VNDetectedObjectObservation]  else { return }
+                  guard let barcodes = request.results else {
+                    dispatchGroup.leave()
+                    return
+                  }
                   ///이미지 내 바코드 검색 성공
-                  existBarcodeImageIdentifiers.append(identifier)
+                  for barcode in barcodes {
+                    guard let _ = barcode as? VNBarcodeObservation else {
+                      dispatchGroup.leave()
+                      return
+                    }
+                    
+                    existBarcodeImageIdentifiers.append(identifier)
+                    dispatchGroup.leave()
+                    return
+                  }
                 }
+                
+                checkImageCount += 1
+                self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
+                dispatchGroup.leave()
               }
               return request
             }
             
             let requestHandler = VNImageRequestHandler(
-              cgImage: cgImage,
-              orientation: CGImagePropertyOrientation(image.imageOrientation),
-              options: [:]
+              ciImage: ciImage,
+              orientation: CGImagePropertyOrientation(image.imageOrientation)
             )
             let vnRequests = [_vnBarCodeDetectionRequest]
-            dispatchGroup.enter()
             try? requestHandler.perform(vnRequests)
           })
           .disposed(by: self._disposeBag)
@@ -94,9 +107,10 @@ final class PhotosManager {
 extension PhotosManager {
   ///targetSize: PHImageManagerMaximumSize 원본 사이즈 fetch
   class func fetchImageWithIdentifier(
-    _ identifier: String, targetSize: CGSize
+    _ identifier: String, targetSize: CGSize,
+    option: PHFetchOptions? = nil, imageOption: PHImageRequestOptions = PHImageRequestOptions()
   ) -> Driver<(UIImage?, String)> {
-    let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
+    let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: option)
     let imageManager = PHImageManager()
     
     guard let asset = fetchAssets.firstObject else {
@@ -105,12 +119,14 @@ extension PhotosManager {
         .asDriver(onErrorJustReturn: (nil, identifier))
     }
     
+    imageOption.deliveryMode = .highQualityFormat
+    
     return Observable<(UIImage?, String)>.create() { emitter in
       imageManager.requestImage(
         for: asset,
         targetSize: targetSize,
-        contentMode: .aspectFill,
-        options: nil,
+        contentMode: .aspectFit,
+        options: imageOption,
         resultHandler: { image, _ in
           emitter.onNext((image, identifier))
           emitter.onCompleted()
