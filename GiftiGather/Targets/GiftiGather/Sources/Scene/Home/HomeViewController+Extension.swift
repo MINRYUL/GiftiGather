@@ -87,6 +87,13 @@ extension HomeViewController {
             )
           )
           item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
+          item.edgeSpacing = NSCollectionLayoutEdgeSpacing(
+            leading: NSCollectionLayoutSpacing.fixed(0),
+            top: NSCollectionLayoutSpacing.fixed(0),
+            trailing: NSCollectionLayoutSpacing.fixed(0),
+            bottom: NSCollectionLayoutSpacing.fixed(0)
+          )
+          
           let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(
               widthDimension: .fractionalWidth(1.0),
@@ -94,6 +101,7 @@ extension HomeViewController {
             ),
             subitems: [item]
           )
+          
           let section = NSCollectionLayoutSection(group: group)
           section.orthogonalScrollingBehavior = .none
           section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)

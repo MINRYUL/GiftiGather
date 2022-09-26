@@ -11,8 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     Injection.shared.injectionContainer()
     PhotoAuthManager.requestPhotosPermissionCheck()
     
-    guard let homeViewController = HomeViewController.instantiate(
-    ) else { return true }
+    guard let homeViewController = HomeViewController.instantiate() else { return true }
     
     let navigationViewController = UINavigationController(rootViewController: homeViewController)
     

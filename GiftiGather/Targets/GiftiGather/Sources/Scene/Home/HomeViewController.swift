@@ -159,24 +159,24 @@ final class HomeViewController: BaseViewController {
 extension HomeViewController {
   private func _bindFilterDataSource() {
     self._viewModel.output.filterDataSource
-      .drive(onNext: { dataSource in
-        self._sectionSnapShotApply(section: .filter, item: dataSource)
+      .drive(onNext: { [weak self] dataSource in
+        self?._sectionSnapShotApply(section: .filter, item: dataSource)
       })
       .disposed(by: disposeBag)
   }
   
   private func _bindPhotoDataSource() {
     self._viewModel.output.photoDataSource
-      .drive(onNext: { dataSource in
-        self._sectionSnapShotApply(section: .photos, item: dataSource)
+      .drive(onNext: { [weak self] dataSource in
+        self?._sectionSnapShotApply(section: .photos, item: dataSource)
       })
       .disposed(by: disposeBag)
   }
   
   private func _bindNoDataSource() {
     self._viewModel.output.noDataSource
-      .drive(onNext: { dataSource in
-        self._sectionSnapShotApply(section: .nodata, item: dataSource)
+      .drive(onNext: { [weak self] dataSource in
+        self?._sectionSnapShotApply(section: .nodata, item: dataSource)
       })
       .disposed(by: disposeBag)
   }
@@ -194,8 +194,12 @@ extension HomeViewController {
   private func _fetchGifticon() {
     PhotosManager.shared.fetchGifticon()
       .asDriver(onErrorJustReturn: [])
-      .drive(onNext: { gifticonIdentifier in
-        gifticonIdentifier.forEach { print($0) }
+      .drive(onNext: { [weak self] gifticonIdentifier in
+        guard let pickerViewController = PickerViewController.instantiate() as? PickerViewController else { return }
+        
+        pickerViewController.imageIdentifierList = gifticonIdentifier
+        
+        self?.present(pickerViewController, animated: true)
       })
       .disposed(by: disposeBag)
   }

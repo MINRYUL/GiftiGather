@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -52,6 +52,16 @@
 		B466B9B9C8BFC6B81CFCFE40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162A6B720DAAD33AC864027D /* AppDelegate.swift */; };
 		B7B3C8CD90E51BE3B837B8D9 /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3A5E97E162016F8459D16125 /* Core.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BCBAF96ADE5070C0F46B5C2C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1327C0D5CC38C5E381259D93 /* LaunchScreen.storyboard */; };
+		C4DF34AC28E1C716001FEC05 /* PickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34A828E1C6ED001FEC05 /* PickerViewController.swift */; };
+		C4DF34AD28E1C719001FEC05 /* PickerViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34AA28E1C6FE001FEC05 /* PickerViewController+Extension.swift */; };
+		C4DF34B128E1C750001FEC05 /* PickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34AF28E1C74E001FEC05 /* PickerCell.swift */; };
+		C4DF34B428E1C9BA001FEC05 /* PickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34B328E1C9BA001FEC05 /* PickerViewModel.swift */; };
+		C4DF34BE28E1CBE3001FEC05 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34B728E1CA75001FEC05 /* UIViewController+Extension.swift */; };
+		C4DF34C228E1D271001FEC05 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34BF28E1D23E001FEC05 /* UIImageView+Extension.swift */; };
+		C4DF34C528E1D4CE001FEC05 /* PickCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34C428E1D4CE001FEC05 /* PickCellModel.swift */; };
+		C4DF34C628E1D4E5001FEC05 /* PickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34B328E1C9BA001FEC05 /* PickerViewModel.swift */; };
+		C4DF34C728E1D512001FEC05 /* PickCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34C428E1D4CE001FEC05 /* PickCellModel.swift */; };
+		C4DF34C828E1D9C1001FEC05 /* DefaultPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4DF34B528E1C9D6001FEC05 /* DefaultPickerViewModel.swift */; };
 		C4F77D0C90FA56B56B26E805 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5559FE16EB225BB0061FC2A3 /* HomeViewController.swift */; };
 		C6A83BC5E6A7EA285CA5280D /* RxCocoa.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BAD8C71D569BCF55096FC069 /* RxCocoa.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CCC5D55DC8D145AC17FD9052 /* RxRelay.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 60880BEE0ACF988C9EA8C97D /* RxRelay.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -344,6 +354,14 @@
 		BD5A483E5F2026332EFF910F /* BaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewCell.swift; sourceTree = "<group>"; };
 		BE44DF86817D2079D3D0DDE1 /* UINavigationController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Extension.swift"; sourceTree = "<group>"; };
 		C2946421CF63D610BDE8AAB1 /* Data.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Data.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4DF34A828E1C6ED001FEC05 /* PickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewController.swift; sourceTree = "<group>"; };
+		C4DF34AA28E1C6FE001FEC05 /* PickerViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PickerViewController+Extension.swift"; sourceTree = "<group>"; };
+		C4DF34AF28E1C74E001FEC05 /* PickerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerCell.swift; sourceTree = "<group>"; };
+		C4DF34B328E1C9BA001FEC05 /* PickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewModel.swift; sourceTree = "<group>"; };
+		C4DF34B528E1C9D6001FEC05 /* DefaultPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultPickerViewModel.swift; sourceTree = "<group>"; };
+		C4DF34B728E1CA75001FEC05 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		C4DF34BF28E1D23E001FEC05 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
+		C4DF34C428E1D4CE001FEC05 /* PickCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickCellModel.swift; sourceTree = "<group>"; };
 		C6258C8EB82C06DE0AD7075C /* Domain.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Domain.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D07FF6DD63A744BE9BD80986 /* Swinject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Swinject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3525984958A338FCBDE7F24 /* HomeFilterCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFilterCellModel.swift; sourceTree = "<group>"; };
@@ -500,6 +518,8 @@
 				79167BD1C83B09218DA251F5 /* String+Extension.swift */,
 				6B8E0064CE8555C40DB4A49C /* UIColor+Extension.swift */,
 				BE44DF86817D2079D3D0DDE1 /* UINavigationController+Extension.swift */,
+				C4DF34B728E1CA75001FEC05 /* UIViewController+Extension.swift */,
+				C4DF34BF28E1D23E001FEC05 /* UIImageView+Extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -520,6 +540,7 @@
 		43C40886284492F14D6824DC /* Scene */ = {
 			isa = PBXGroup;
 			children = (
+				C4DF34A728E1C6DF001FEC05 /* Picker */,
 				B8910CCF7486FE2B28F59260 /* Home */,
 			);
 			path = Scene;
@@ -592,6 +613,7 @@
 		5A026FD942C07BDE69D28A97 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				C4DF34B228E1C9AB001FEC05 /* Picker */,
 				C1E17591FBE6569906BE2FA6 /* Home */,
 				2A89CCA85E9D6D91C37061B4 /* Model */,
 				9E43C9DAEB1F972BA5673464 /* CellModel.swift */,
@@ -690,6 +712,42 @@
 				96744567459E5196C7BC11B5 /* HomeViewModel.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		C4DF34A728E1C6DF001FEC05 /* Picker */ = {
+			isa = PBXGroup;
+			children = (
+				C4DF34AE28E1C734001FEC05 /* Views */,
+				C4DF34A828E1C6ED001FEC05 /* PickerViewController.swift */,
+				C4DF34AA28E1C6FE001FEC05 /* PickerViewController+Extension.swift */,
+			);
+			path = Picker;
+			sourceTree = "<group>";
+		};
+		C4DF34AE28E1C734001FEC05 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C4DF34AF28E1C74E001FEC05 /* PickerCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C4DF34B228E1C9AB001FEC05 /* Picker */ = {
+			isa = PBXGroup;
+			children = (
+				C4DF34C328E1D4C4001FEC05 /* Model */,
+				C4DF34B328E1C9BA001FEC05 /* PickerViewModel.swift */,
+				C4DF34B528E1C9D6001FEC05 /* DefaultPickerViewModel.swift */,
+			);
+			path = Picker;
+			sourceTree = "<group>";
+		};
+		C4DF34C328E1D4C4001FEC05 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C4DF34C428E1D4CE001FEC05 /* PickCellModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		DC1BD174F74E3D8AADD411AD /* Products */ = {
@@ -938,6 +996,9 @@
 			attributes = {
 				ORGANIZATIONNAME = GiftiGather;
 				TargetAttributes = {
+					7EFEF27AA4A5597FDC9378E3 = {
+						LastSwiftMigration = 1340;
+					};
 				};
 			};
 			buildConfigurationList = 87FA5BF0B4D56B42B4705190 /* Build configuration list for PBXProject "GiftiGather" */;
@@ -955,17 +1016,17 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1505109CC9A7BDA415EACD0 /* Presentation */,
-				9FB2DEA7C082CA1FCBA3C06C /* Domain */,
 				7EFEF27AA4A5597FDC9378E3 /* PresentationTests */,
 				7C93DFB97A0331C8612547CB /* CoreTests */,
-				FA477751D57D20FC5DB7AB1B /* Core */,
-				B9F8CC90CB81FF87D7154973 /* DIContainerTests */,
-				6874DA100A46AE35DDFB9F7D /* DIContainer */,
-				91414778501013A68E47525D /* Data */,
-				6FE147F0D80B1785E91C987B /* DataTests */,
-				3544BEF2D352BB08DADEA8D0 /* DomainTests */,
 				3EDC0CDCA4889F2C2695E38E /* GiftiGather */,
+				6FE147F0D80B1785E91C987B /* DataTests */,
+				A1505109CC9A7BDA415EACD0 /* Presentation */,
+				9FB2DEA7C082CA1FCBA3C06C /* Domain */,
+				3544BEF2D352BB08DADEA8D0 /* DomainTests */,
+				91414778501013A68E47525D /* Data */,
+				6874DA100A46AE35DDFB9F7D /* DIContainer */,
+				B9F8CC90CB81FF87D7154973 /* DIContainerTests */,
+				FA477751D57D20FC5DB7AB1B /* Core */,
 			);
 		};
 /* End PBXProject section */
@@ -1067,7 +1128,10 @@
 			files = (
 				2C47B8A10A08AA4D54D33D8E /* CellModel.swift in Sources */,
 				9ED5673CCB7BC9C469575D88 /* DefaultHomeViewModel.swift in Sources */,
+				C4DF34C828E1D9C1001FEC05 /* DefaultPickerViewModel.swift in Sources */,
+				C4DF34C628E1D4E5001FEC05 /* PickerViewModel.swift in Sources */,
 				D1B8DEA5382DC5A9117438B8 /* HomeViewModel.swift in Sources */,
+				C4DF34C728E1D512001FEC05 /* PickCellModel.swift in Sources */,
 				3482FE4B764B0BA46964F640 /* HomeFilterCellModel.swift in Sources */,
 				A6E0531856231F8A4EE1B188 /* HomePhotoCellModel.swift in Sources */,
 				162E8F5B57DA77A205C6B56A /* NoDataCellModel.swift in Sources */,
@@ -1108,6 +1172,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4DF34C528E1D4CE001FEC05 /* PickCellModel.swift in Sources */,
+				C4DF34B428E1C9BA001FEC05 /* PickerViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1131,6 +1197,7 @@
 			files = (
 				DB4DDF7874D693DC1D21537A /* TuistAssets+GiftiGather.swift in Sources */,
 				2308DFAC955C1090336FF30E /* TuistBundle+GiftiGather.swift in Sources */,
+				C4DF34C228E1D271001FEC05 /* UIImageView+Extension.swift in Sources */,
 				21ED43DDFD1B3A9D7EDA3EA2 /* TuistStrings+GiftiGather.swift in Sources */,
 				B466B9B9C8BFC6B81CFCFE40 /* AppDelegate.swift in Sources */,
 				2FF779B4C5B94555B48038A1 /* BaseCollectionView.swift in Sources */,
@@ -1140,13 +1207,17 @@
 				DF8F2E70B754D31C79661026 /* CGImagePropertyOrientation+Extension.swift in Sources */,
 				869A3833C664CDC9536DB29F /* Injection+Extesnion.swift in Sources */,
 				E859C2283FDB48FF7200C307 /* String+Extension.swift in Sources */,
+				C4DF34AD28E1C719001FEC05 /* PickerViewController+Extension.swift in Sources */,
 				1EF2354EF5EDD549F4AEE565 /* UIColor+Extension.swift in Sources */,
+				C4DF34BE28E1CBE3001FEC05 /* UIViewController+Extension.swift in Sources */,
 				E7BC58839F2ED7F34D7DFC93 /* UINavigationController+Extension.swift in Sources */,
 				E81D80BEA9B99BA9F5B7E3BC /* PhotoAuthManager.swift in Sources */,
 				B3B65735B2A547F5155C8B6B /* PhotosManager.swift in Sources */,
 				1495F75328BEE14BF4CAB65F /* NoDataCollectionViewCell.swift in Sources */,
+				C4DF34B128E1C750001FEC05 /* PickerCell.swift in Sources */,
 				A00461CAF2E50EC6811C191E /* HomeViewController+Extension.swift in Sources */,
 				C4F77D0C90FA56B56B26E805 /* HomeViewController.swift in Sources */,
+				C4DF34AC28E1C716001FEC05 /* PickerViewController.swift in Sources */,
 				066CABE27B7BE74150579D7C /* HomeViewStatus.swift in Sources */,
 				19A21789C47FF645E1D1C23E /* HomeFilterCell.swift in Sources */,
 				CF44AE93A5F4A33396FFAD05 /* HomePhotoCell.swift in Sources */,
@@ -1566,6 +1637,7 @@
 		71D1A7DDFEE4838C351D180C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "Derived/InfoPlists/PresentationTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -1941,6 +2013,7 @@
 		F7372451B4D39C794F3B26D4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "Derived/InfoPlists/PresentationTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

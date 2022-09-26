@@ -17,6 +17,7 @@ extension Injection {
     
     let injection = Injection.shared
     self.injectionHomeContainer(injection)
+    self.injectionPickerContainer(injection)
   }
   
   func injectionHomeContainer(_ injection: Injection) {
@@ -24,6 +25,17 @@ extension Injection {
       
       container.register(HomeViewModel.self) { _ in
         return DefaultHomeViewModel()
+      }
+      
+      return container
+    }
+  }
+  
+  func injectionPickerContainer(_ injection: Injection) {
+    injection.dependencyInjected() { container in
+      
+      container.register(PickerViewModel.self) { _ in
+        return DefaultPickerViewModel()
       }
       
       return container

@@ -23,9 +23,7 @@ final class HomePhotoCell: BaseCollectionViewCell {
     return imageView
   }()
   
-  private var _disposeBag = DisposeBag()
-  
-  private var _photoIdentifier: String?
+  private var _disposeBag: DisposeBag = DisposeBag()
   
   override func viewDidInit() {
     super.viewDidInit()
@@ -34,21 +32,7 @@ final class HomePhotoCell: BaseCollectionViewCell {
   }
   
   func display(cellModel: HomePhotoCellModel) {
-    self._photoIdentifier = cellModel.photoLocalIentifier
-    PhotosManager.fetchImageWithIdentifier(
-      cellModel.photoLocalIentifier,
-      targetSize: PHImageManagerMaximumSize
-    ).asDriver(onErrorJustReturn: (nil, cellModel.photoLocalIentifier))
-      .map { [weak self] (image, identifier) -> UIImage? in
-        switch identifier == self?._photoIdentifier {
-          case true: return image
-          case false: return nil
-        }
-      }
-      .compactMap { $0 }
-      .drive(self._imageView.rx.image)
-      .disposed(by: self._disposeBag)
-    
+    self._imageView.setImage(with: cellModel.photoLocalIentifier, disposeBag: _disposeBag)
   }
 }
 
