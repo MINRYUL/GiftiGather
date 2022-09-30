@@ -61,18 +61,16 @@ extension HomeViewController {
           let item = NSCollectionLayoutItem(
             layoutSize: .init(
               widthDimension: .estimated(100),
-              heightDimension: .absolute(40)
+              heightDimension: .absolute(35)
             )
           )
-          item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
           
           let group = NSCollectionLayoutGroup.vertical(
             layoutSize: .init(
               widthDimension: .estimated(100),
-              heightDimension: .estimated(30)
+              heightDimension: .estimated(35)
             ), subitems: [item]
           )
-          group.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
           
           let section = NSCollectionLayoutSection(group: group)
           section.orthogonalScrollingBehavior = .continuous
@@ -83,16 +81,10 @@ extension HomeViewController {
           let item = NSCollectionLayoutItem(
             layoutSize: .init(
               widthDimension: .fractionalWidth(0.5),
-              heightDimension: .fractionalHeight(1.0)
+              heightDimension: .fractionalWidth(0.5)
             )
           )
           item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
-          item.edgeSpacing = NSCollectionLayoutEdgeSpacing(
-            leading: NSCollectionLayoutSpacing.fixed(0),
-            top: NSCollectionLayoutSpacing.fixed(0),
-            trailing: NSCollectionLayoutSpacing.fixed(0),
-            bottom: NSCollectionLayoutSpacing.fixed(0)
-          )
           
           let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(

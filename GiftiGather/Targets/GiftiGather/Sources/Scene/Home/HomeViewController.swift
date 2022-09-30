@@ -199,6 +199,7 @@ extension HomeViewController {
         
         pickerViewController.imageIdentifierList = gifticonIdentifier
         
+        self?._status = .none
         self?.present(pickerViewController, animated: true)
       })
       .disposed(by: disposeBag)

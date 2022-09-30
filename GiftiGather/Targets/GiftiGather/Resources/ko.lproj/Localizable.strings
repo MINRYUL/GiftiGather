@@ -6,5 +6,10 @@
   
 */
 
+//MARK: - Basic
 "Home" = "홈";
+"add" = "추가";
+"gifticon" = "기프티콘";
+
+//MARK: - Toast
 "msg_add_image" = "추가할 이미지를 선택해주세요!";

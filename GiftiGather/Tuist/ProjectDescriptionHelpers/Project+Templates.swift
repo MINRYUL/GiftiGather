@@ -47,6 +47,7 @@ extension Project {
             .target(name: Layer.domain.rawValue),
             .target(name: Layer.core.rawValue),
             .external(name: "RxSwift"),
+            .external(name: "RxCocoa")
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(

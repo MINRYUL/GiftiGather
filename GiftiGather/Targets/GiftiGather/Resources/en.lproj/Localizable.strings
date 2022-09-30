@@ -5,6 +5,10 @@
   Created by 김민창 on 2022/05/26.
   
 */
-
+//MARK: - Basic
 "Home" = "Home";
+"add" = "add";
+"gifticon" = "Digital gifts";
+
+//MARK: - Toast
 "mas_add_image" = "Please select an image to add!";

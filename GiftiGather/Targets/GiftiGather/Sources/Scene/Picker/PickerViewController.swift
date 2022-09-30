@@ -31,6 +31,35 @@ final class PickerViewController: BaseViewController {
     return collectionView
   }()
   
+  lazy var addContainerView: UIView = {
+    let view = UIView()
+    view.translatesAutoresizingMaskIntoConstraints = false
+    return view
+  }()
+  
+  lazy var titleLabel: UILabel = {
+    let label = UILabel()
+    label.font = .systemFont(ofSize: 24, weight: .semibold)
+    label.text = "gifticon".localized()
+    label.translatesAutoresizingMaskIntoConstraints = false
+    return label
+  }()
+  
+  lazy var addButton: UIButton = {
+    let button = UIButton()
+    button.setTitle("add".localized(), for: .normal)
+    button.setTitleColor(UIColor.systemBlue, for: .normal)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    return button
+  }()
+  
+  lazy var addFooterView: UIView = {
+    let view = UIView()
+    view.backgroundColor = .background
+    view.translatesAutoresizingMaskIntoConstraints = false
+    return view
+  }()
+  
   private var _dataSource: PickerDataSource?
   
   //MARK: - Injection
