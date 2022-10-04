@@ -12,6 +12,7 @@ import RxSwift
 import RxCocoa
 
 public struct HomeViewModelInput {
+  public let selectedImageIdentifers: AnyObserver<[String]>
 }
 
 public struct HomeViewModelOutput {

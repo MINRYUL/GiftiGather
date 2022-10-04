@@ -32,6 +32,7 @@ extension Project {
           dependencies: [
             .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.presentaion.rawValue),
+            .target(name: Layer.domain.rawValue),
             .target(name: Layer.core.rawValue),
             .external(name: "Swinject"),
             .external(name: "RxSwift"),

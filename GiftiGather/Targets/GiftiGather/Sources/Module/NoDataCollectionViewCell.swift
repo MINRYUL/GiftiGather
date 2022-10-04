@@ -6,11 +6,35 @@
 //  Copyright © 2022 GiftiGather. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+import Presentation
 
 final class NoDataCollectionViewCell: BaseCollectionViewCell {
+  private var _titleLabel: UILabel = {
+    let label = UILabel()
+    label.font = .systemFont(ofSize: 18, weight: .semibold)
+    label.textColor = .label
+    label.numberOfLines = 0
+    label.textAlignment = .center
+    label.translatesAutoresizingMaskIntoConstraints = false
+    return label
+  }()
+  
   override func viewDidInit() {
     super.viewDidInit()
     
+    self.contentView.addSubview(self._titleLabel)
+    
+    NSLayoutConstraint.activate([
+      self._titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 50),
+      self._titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -50),
+      self._titleLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+      self._titleLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+    ])
+  }
+  
+  func display(cellModel: NoDataCellModel) {
+    self._titleLabel.text = cellModel.titleKey.localized()
   }
 }

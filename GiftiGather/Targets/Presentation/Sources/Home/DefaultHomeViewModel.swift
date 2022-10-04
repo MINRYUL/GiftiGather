@@ -18,6 +18,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
   public var output: HomeViewModelOutput
   
   //MARK: - Input
+  private let _selectedImageIdentifers = PublishSubject<[String]>()
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[HomeFilterCellModel]>(value: [])
@@ -26,6 +27,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
 
   public init() {
     self.input = HomeViewModelInput(
+      selectedImageIdentifers: self._selectedImageIdentifers.asObserver()
     )
     
     self.output = HomeViewModelOutput(
@@ -36,7 +38,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
     
     self._makeMockData()
     
-    
+    self._bindSelectedImageIdentifer()
   }
   
   private func _makeMockData() {
@@ -44,46 +46,28 @@ public struct DefaultHomeViewModel: HomeViewModel {
       HomeFilterCellModel(
         identity: UUID(),
         title: "전체"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "치킨"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "긴 필터를 넣어보자"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "피자"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "커피"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "매우매우매우매우 매우매우매우매우 매우매우매우매우 매우매우매우매우 긴 필터를 넣어보자"
-      ),
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "긴 필터를 넣어보자"
       )
     ])
     
-    self._photoDataSource.onNext([
-      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
-      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
-      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001"),
-      HomePhotoCellModel(identity: UUID(), photoLocalIentifier: "EC531C2B-150E-4397-9FEF-49DE84012115/L0/001")
-    ])
+    self._makeNoData()
   }
   
+  private func _makeNoData() {
+    self._noDataSource.onNext([
+      NoDataCellModel(identity: UUID(), titleKey: "noData")
+    ])
+  }
 }
 
 //MARK: - Input Binding
 extension DefaultHomeViewModel {
-  
+  private func _bindSelectedImageIdentifer() {
+    self._selectedImageIdentifers
+      .subscribe(onNext: { imageIdentifiers in
+        
+      })
+      .disposed(by: disposeBag)
+  }
 }
 
 //MARK: - Output Binding

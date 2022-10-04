@@ -13,6 +13,12 @@ import Presentation
 import RxSwift
 import RxCocoa
 
+protocol PickerViewControllerDelegate: AnyObject {
+  func didSelectImageIdentifiers(
+    _ viewController: PickerViewController, imageIdentifiers: [String]
+  )
+}
+
 enum PickerSection: Int, CaseIterable {
   case pick
 }
@@ -62,16 +68,18 @@ final class PickerViewController: BaseViewController {
   
   private var _dataSource: PickerDataSource?
   
+  weak var delegate: PickerViewControllerDelegate?
+  
   //MARK: - Injection
   @Injected private var _viewModel: PickerViewModel
   
   //MARK: - Observer
-  var imageIdentifierList: [String]? {
+  var imageIdentifierListWithCheck: ([String], Bool)? {
     didSet {
-      guard let imageIdentifierList = imageIdentifierList else {
+      guard let imageIdentifierListWithCheck = imageIdentifierListWithCheck else {
         return
       }
-      self._viewModel.input.imageIdentifierList.onNext(imageIdentifierList)
+      self._viewModel.input.imageIdentifierList.onNext(imageIdentifierListWithCheck)
     }
   }
   
@@ -82,9 +90,12 @@ final class PickerViewController: BaseViewController {
     
     self._configureRegister()
     self._configureDataSource()
-    self._configureData()
+    
+    self._bindTableView()
+    self._bindDidTouchAdd()
     
     self._bindDataSource()
+    self._bindSelectedImageIdentifiers()
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -93,7 +104,6 @@ final class PickerViewController: BaseViewController {
     self.showToast("msg_add_image".localized())
   }
   
-  //MARK: - Configure
   private func _configureRegister() {
     PickerCell.register(to: self.collectionView)
   }
@@ -122,21 +132,43 @@ final class PickerViewController: BaseViewController {
       self._dataSource = dataSource
       collectionView.dataSource = dataSource
   }
+}
+
+//MARK: - Input Binding
+extension PickerViewController {
+  private func _bindTableView() {
+    self.collectionView.rx.itemSelected
+      .bind(to: self._viewModel.input.didSelectIndex)
+      .disposed(by: disposeBag)
+  }
   
-  private func _configureData() {
-    var snapshot = SourceSnapshot()
-    PickerSection.allCases.forEach {
-      snapshot.appendSections([$0])
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
+  private func _bindDidTouchAdd() {
+    self.addButton.rx.tap
+      .bind(to: self._viewModel.input.didTouchAdd)
+      .disposed(by: disposeBag)
   }
 }
 
+//MARK: - Output Binding
 extension PickerViewController {
   private func _bindDataSource() {
     self._viewModel.output.dataSource
       .drive(onNext: { [weak self] dataSource in
         self?._sectionSnapShotApply(section: .pick, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindSelectedImageIdentifiers() {
+    self._viewModel.output.selectedImageIdentifiers
+      .drive(onNext: { [weak self] imageIdentifiers in
+        guard let self = self else { return }
+        
+        self.dismiss(animated: true, completion: {
+          self.delegate?.didSelectImageIdentifiers(
+            self, imageIdentifiers: imageIdentifiers
+          )
+        })
       })
       .disposed(by: disposeBag)
   }
@@ -146,10 +178,9 @@ extension PickerViewController {
 extension PickerViewController {
   private func _sectionSnapShotApply(section: PickerSection, item: [AnyHashable]) {
     DispatchQueue.global().sync {
-      guard var snapshot = self._dataSource?.snapshot() else { return }
-      item.forEach {
-        snapshot.appendItems([$0], toSection: section)
-      }
+      var snapshot = SourceSnapshot()
+      snapshot.appendSections([section])
+      snapshot.appendItems(item, toSection: section)
       self._dataSource?.apply(snapshot, animatingDifferences: true)
     }
   }

@@ -90,8 +90,37 @@ final class HomeViewController: BaseViewController {
   @objc private func _addImageAction() {
     switch self._status {
       case .none:
-        self._fetchGifticon()
-        self._status = .progress
+        let alert = UIAlertController(
+          title: nil,
+          message: nil,
+          preferredStyle: UIAlertController.Style.actionSheet
+        )
+        let autoAction =  UIAlertAction(
+          title: "gifticon_auto_add".localized(),
+          style: UIAlertAction.Style.default,
+          handler: { [weak self] _ in
+            self?._status = .progress
+            self?._fetchGifticon()
+          }
+        )
+        let directAction =  UIAlertAction(
+          title: "gifticon_directly_add".localized(),
+          style: UIAlertAction.Style.default,
+          handler: { [weak self] _ in
+            self?._status = .progress
+            self?._fetchAllIdentifier()
+          }
+        )
+        
+        let cancelAction = UIAlertAction(
+          title: "cancel".localized(), style: UIAlertAction.Style.cancel
+        )
+        
+        alert.addAction(autoAction)
+        alert.addAction(directAction)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: false)
         
       case .progress: break
     }
@@ -132,8 +161,19 @@ final class HomeViewController: BaseViewController {
             
             return cell
             
-          default: return UICollectionViewCell()
+          case .nodata:
+            guard let cell = collectionView.dequeueReusableCell(
+              withReuseIdentifier: NoDataCollectionViewCell.identifier,
+              for: indexPath
+            ) as? NoDataCollectionViewCell,
+                  let item = item as? NoDataCellModel
+            else  { return UICollectionViewCell() }
             
+            cell.display(cellModel: item)
+            
+            return cell
+            
+          default: return UICollectionViewCell()
         }
       })
       
@@ -194,15 +234,36 @@ extension HomeViewController {
   private func _fetchGifticon() {
     PhotosManager.shared.fetchGifticon()
       .asDriver(onErrorJustReturn: [])
-      .drive(onNext: { [weak self] gifticonIdentifier in
-        guard let pickerViewController = PickerViewController.instantiate() as? PickerViewController else { return }
-        
-        pickerViewController.imageIdentifierList = gifticonIdentifier
-        
-        self?._status = .none
-        self?.present(pickerViewController, animated: true)
+      .drive(onNext: { [weak self] imageIdentifiers in
+        self?._presentToPickerViewController(
+          imageIdentifier: imageIdentifiers, isAllSelect: true
+        )
       })
       .disposed(by: disposeBag)
+  }
+  
+  private func _fetchAllIdentifier() {
+    PhotosManager.shared.fetchAllIdentifier()
+      .asDriver(onErrorJustReturn: [])
+      .drive(onNext: { [weak self] imageIdentifiers in
+        self?._presentToPickerViewController(
+          imageIdentifier: imageIdentifiers, isAllSelect: false
+        )
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _presentToPickerViewController(
+    imageIdentifier: [String], isAllSelect: Bool
+  ) {
+    guard let pickerViewController = PickerViewController
+      .instantiate() as? PickerViewController else { return }
+    
+    pickerViewController.delegate = self
+    pickerViewController.imageIdentifierListWithCheck = (imageIdentifier, isAllSelect)
+    
+    self._status = .none
+    self.present(pickerViewController, animated: true)
   }
 }
 
@@ -216,5 +277,14 @@ extension HomeViewController {
       }
       self._dataSource?.apply(snapshot, animatingDifferences: true)
     }
+  }
+}
+
+//MARK: - PickerViewControllerDelegate
+extension HomeViewController: PickerViewControllerDelegate {
+  func didSelectImageIdentifiers(
+    _ viewController: PickerViewController, imageIdentifiers: [String]
+  ) {
+    self._viewModel.input.selectedImageIdentifers.onNext(imageIdentifiers)
   }
 }

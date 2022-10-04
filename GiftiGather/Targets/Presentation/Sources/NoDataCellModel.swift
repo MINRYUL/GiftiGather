@@ -10,6 +10,5 @@ import Foundation
 
 public struct NoDataCellModel: CellModel {
   public var identity = UUID()
-  public let title: String
-  public let imageName: String
+  public let titleKey: String
 }

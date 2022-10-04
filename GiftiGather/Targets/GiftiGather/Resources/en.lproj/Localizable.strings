@@ -9,6 +9,12 @@
 "Home" = "Home";
 "add" = "add";
 "gifticon" = "Digital gifts";
+"cancel" = "cancel";
+"noData" = "There are no Digital gifts added yet🥲 Please add gifticons!";
+
+//MARK: - Alert
+"gifticon_auto_add" = "Automatically add digital gifts";
+"gifticon_directly_add" = "Add digital gifts directly";
 
 //MARK: - Toast
 "mas_add_image" = "Please select an image to add!";

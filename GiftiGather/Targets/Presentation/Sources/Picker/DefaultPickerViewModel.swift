@@ -18,22 +18,29 @@ public struct DefaultPickerViewModel: PickerViewModel {
   public var output: PickerViewModelOutput
   
   //MARK: - Input
-  private let _imageIdentifierList = PublishSubject<[String]>()
+  private let _imageIdentifierList = PublishSubject<([String], Bool)>()
+  private let _didSelectIndex = PublishSubject<IndexPath>()
+  private let _didTouchAdd = PublishSubject<Void>()
   
   //MARK: - Output
   private let _dataSource = BehaviorSubject<[PickCellModel]>(value: [])
-  
+  private let _selectedImageIdentifiers = PublishSubject<[String]>()
   
   public init() {
     self.input = PickerViewModelInput(
-      imageIdentifierList: self._imageIdentifierList.asObserver()
+      imageIdentifierList: self._imageIdentifierList.asObserver(),
+      didSelectIndex: self._didSelectIndex.asObserver(),
+      didTouchAdd: self._didTouchAdd.asObserver()
     )
     
     self.output = PickerViewModelOutput(
-      dataSource: self._dataSource.asDriver(onErrorJustReturn: [])
+      dataSource: self._dataSource.asDriver(onErrorJustReturn: []),
+      selectedImageIdentifiers: self._selectedImageIdentifiers.asDriver(onErrorJustReturn: [])
     )
     
     self._bindImageIdentifierList()
+    self._bindDidSelectIndex()
+    self._bindDidTouchAdd()
   }
 }
 
@@ -41,15 +48,55 @@ public struct DefaultPickerViewModel: PickerViewModel {
 extension DefaultPickerViewModel {
   private func _bindImageIdentifierList() {
     self._imageIdentifierList
-      .map { imageIdentifierList -> [PickCellModel] in
+      .map { imageIdentifierList, isCheck -> [PickCellModel] in
         imageIdentifierList.map { identifier -> PickCellModel in
           return PickCellModel(
-            isCheck: true,
+            isCheck: isCheck,
             imageIdentifier: identifier
           )
         }
       }
       .bind(to: _dataSource)
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidSelectIndex() {
+    self._didSelectIndex
+      .map { indexPath -> [PickCellModel]? in
+        guard let dataSource = try? self._dataSource.value() else { return nil }
+        
+        return dataSource.enumerated().map { index, item in
+          switch index == indexPath.item {
+            case true:
+              return PickCellModel(
+                identity: UUID(),
+                isCheck: !item.isCheck,
+                imageIdentifier: item.imageIdentifier
+              )
+              
+            case false: return item
+          }
+        }
+      }
+      .compactMap { $0 }
+      .bind(to: _dataSource)
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidTouchAdd() {
+    self._didTouchAdd
+      .map { _ -> [String]? in
+        guard let dataSource = try? self._dataSource.value() else { return nil }
+        
+        return dataSource.map { item -> String? in
+          switch item.isCheck {
+            case true: return item.imageIdentifier
+            case false: return nil
+          }
+        }.compactMap { $0 }
+      }
+      .compactMap { $0 }
+      .bind(to: self._selectedImageIdentifiers)
       .disposed(by: disposeBag)
   }
 }

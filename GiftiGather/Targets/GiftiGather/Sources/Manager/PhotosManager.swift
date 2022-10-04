@@ -32,7 +32,7 @@ final class PhotosManager {
   func fetchGifticon() -> Observable<[String]> {
     self._gifticonFetchProgress.onNext(0)
     
-    return Observable.create() { emitter in
+    return Observable.create() { [unowned self] emitter in
       let dispatchGroup = DispatchGroup()
       let allImageAssets = PHAsset.fetchAssets(with: .image, options: nil)
       var existBarcodeImageIdentifiers = [String]()
@@ -98,6 +98,26 @@ final class PhotosManager {
         emitter.onNext(existBarcodeImageIdentifiers)
         self._disposeBag = DisposeBag()
       }
+      return Disposables.create()
+    }
+  }
+  
+  func fetchAllIdentifier() -> Observable<[String]> {
+    self._gifticonFetchProgress.onNext(0)
+    
+    return Observable.create() { [unowned self] emitter in
+      let allImageAssets = PHAsset.fetchAssets(with: .image, options: nil)
+      var imageIdentifiers = [String]()
+      var checkImageCount: Double = 0
+      
+      for i in 0..<allImageAssets.count {
+        let imageAsset = allImageAssets[i]
+        imageIdentifiers.append(imageAsset.localIdentifier)
+        checkImageCount += 1
+        self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
+      }
+      
+      emitter.onNext(imageIdentifiers)
       return Disposables.create()
     }
   }

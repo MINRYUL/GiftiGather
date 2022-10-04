@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PickCellModel: CellModel {
+public struct PickCellModel: CellModel, Equatable {
   public var identity = UUID()
   public let isCheck: Bool
   public let imageIdentifier: String

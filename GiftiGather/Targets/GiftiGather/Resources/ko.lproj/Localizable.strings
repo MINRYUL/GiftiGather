@@ -10,6 +10,12 @@
 "Home" = "홈";
 "add" = "추가";
 "gifticon" = "기프티콘";
+"cancel" = "취소";
+"noData" = "아직 추가된 기프티콘이 없어요🥲 기프티콘을 추가해주세요!";
+
+//MARK: - Alert
+"gifticon_auto_add" = "기프티콘 자동 추가";
+"gifticon_directly_add" = "기프티콘 직접 추가";
 
 //MARK: - Toast
 "msg_add_image" = "추가할 이미지를 선택해주세요!";

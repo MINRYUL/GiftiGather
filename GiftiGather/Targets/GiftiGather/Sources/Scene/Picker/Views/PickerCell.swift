@@ -29,7 +29,7 @@ final class PickerCell: BaseCollectionViewCell {
   
   private lazy var _checkImageView: UIImageView = {
     let imageView = UIImageView()
-    
+    imageView.image = UIImage(systemName: "checkmark.circle.fill")
     imageView.translatesAutoresizingMaskIntoConstraints = false
     return imageView
   }()
@@ -44,6 +44,17 @@ final class PickerCell: BaseCollectionViewCell {
   
   func display(cellModel: PickCellModel) {
     self._imageView.setImage(with: cellModel.imageIdentifier, disposeBag: _disposeBag)
+    
+    switch cellModel.isCheck {
+      case true:
+        self._checkImageView.tintColor = .systemBlue
+        self._imageContainerView.layer.borderWidth = 2
+        self._imageContainerView.layer.borderColor = UIColor.systemBlue.cgColor
+        
+      case false:
+        self._checkImageView.tintColor = .gray
+        self._imageContainerView.layer.borderColor = UIColor.clear.cgColor
+    }
   }
   
 }
@@ -52,8 +63,8 @@ final class PickerCell: BaseCollectionViewCell {
 extension PickerCell {
   private func _configureUI() {
     self.contentView.addSubview(self._imageContainerView)
-    self.contentView.addSubview(self._checkImageView)
     self._imageContainerView.addSubview(self._imageView)
+    self._imageContainerView.addSubview(self._checkImageView)
     
     NSLayoutConstraint.activate([
       self._imageContainerView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -63,8 +74,8 @@ extension PickerCell {
     ])
     
     NSLayoutConstraint.activate([
-      self._checkImageView.topAnchor.constraint(equalTo: self.topAnchor),
-      self._checkImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+      self._checkImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 3),
+      self._checkImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -3),
       self._checkImageView.heightAnchor.constraint(equalToConstant: 30),
       self._checkImageView.widthAnchor.constraint(equalToConstant: 30)
     ])

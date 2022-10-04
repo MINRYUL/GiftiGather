@@ -12,11 +12,14 @@ import RxSwift
 import RxCocoa
 
 public struct PickerViewModelInput {
-  public let imageIdentifierList: AnyObserver<[String]>
+  public let imageIdentifierList: AnyObserver<([String], Bool)>
+  public let didSelectIndex: AnyObserver<IndexPath>
+  public let didTouchAdd: AnyObserver<Void>
 }
 
 public struct PickerViewModelOutput {
   public let dataSource: Driver<[PickCellModel]>
+  public let selectedImageIdentifiers: Driver<[String]>
 }
 
 public protocol PickerViewModel: ViewModel {
