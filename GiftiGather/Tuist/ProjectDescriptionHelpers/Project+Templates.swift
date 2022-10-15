@@ -33,7 +33,6 @@ extension Project {
             .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.presentaion.rawValue),
             .target(name: Layer.domain.rawValue),
-            .target(name: Layer.core.rawValue),
             .external(name: "Swinject"),
             .external(name: "RxSwift"),
             .external(name: "RxCocoa")
@@ -66,6 +65,8 @@ extension Project {
           platform: .iOS,
           dependencies: [
             .target(name: Layer.domain.rawValue),
+            .target(name: Layer.core.rawValue),
+            .external(name: "RealmSwift"),
             .external(name: "RxSwift"),
             .external(name: "RxRealm")
           ]

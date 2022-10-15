@@ -9,20 +9,24 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let dependencies = Dependencies(
-    carthage: [],
-    swiftPackageManager: [
-        .remote(
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            requirement: .upToNextMajor(from: "6.5.0")
-        ),
-        .remote(
-            url: "https://github.com/Swinject/Swinject.git",
-            requirement: .upToNextMajor(from: "2.8.0")
-        ),
-        .remote(
-            url: "https://github.com/RxSwiftCommunity/RxRealm.git",
-            requirement: .upToNextMajor(from: "1.0.1")
-        )
-    ],
-    platforms: [.iOS]
+  carthage: [],
+  swiftPackageManager: [
+    .remote(
+      url: "https://github.com/realm/realm-swift.git",
+      requirement: .upToNextMajor(from: "10.32.0")
+    ),
+    .remote(
+      url: "https://github.com/ReactiveX/RxSwift.git",
+      requirement: .upToNextMajor(from: "6.5.0")
+    ),
+    .remote(
+      url: "https://github.com/Swinject/Swinject.git",
+      requirement: .upToNextMajor(from: "2.8.0")
+    ),
+    .remote(
+      url: "https://github.com/RxSwiftCommunity/RxRealm.git",
+      requirement: .upToNextMajor(from: "5.0.5")
+    )
+  ],
+  platforms: [.iOS]
 )
