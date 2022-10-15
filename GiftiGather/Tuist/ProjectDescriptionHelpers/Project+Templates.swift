@@ -66,7 +66,8 @@ extension Project {
           platform: .iOS,
           dependencies: [
             .target(name: Layer.domain.rawValue),
-            .external(name: "RxSwift")
+            .external(name: "RxSwift"),
+            .external(name: "RxRealm")
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(
