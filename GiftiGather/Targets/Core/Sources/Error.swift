@@ -9,5 +9,6 @@
 import Foundation
 
 public enum DefaultError: Error {
+  case write
   case unknowned
 }

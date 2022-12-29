@@ -10,7 +10,7 @@
 "add" = "add";
 "gifticon" = "Digital gifts";
 "cancel" = "cancel";
-"noData" = "There are no Digital gifts added yet🥲 Please add gifticons!";
+"noData" = "There are no Digital gifts added yet🥲 Please add Digital gifts!";
 
 //MARK: - Alert
 "gifticon_auto_add" = "Automatically add digital gifts";

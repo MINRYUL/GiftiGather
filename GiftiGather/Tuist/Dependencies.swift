@@ -13,7 +13,7 @@ let dependencies = Dependencies(
   swiftPackageManager: [
     .remote(
       url: "https://github.com/realm/realm-swift.git",
-      requirement: .upToNextMajor(from: "10.32.0")
+      requirement: .upToNextMajor(from: "10.33.0")
     ),
     .remote(
       url: "https://github.com/ReactiveX/RxSwift.git",
@@ -22,10 +22,6 @@ let dependencies = Dependencies(
     .remote(
       url: "https://github.com/Swinject/Swinject.git",
       requirement: .upToNextMajor(from: "2.8.0")
-    ),
-    .remote(
-      url: "https://github.com/RxSwiftCommunity/RxRealm.git",
-      requirement: .upToNextMajor(from: "5.0.5")
     )
   ],
   platforms: [.iOS]

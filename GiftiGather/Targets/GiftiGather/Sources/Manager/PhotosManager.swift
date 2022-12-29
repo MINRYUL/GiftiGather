@@ -47,7 +47,7 @@ final class PhotosManager {
           imageAsset.localIdentifier,
           targetSize: PHImageManagerMaximumSize
         ).asObservable()
-          .observe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+          .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
           .subscribe(onNext : { (image, identifier) in
             guard let image = image,
                   let ciImage = CIImage(image: image) else { return }
@@ -80,6 +80,7 @@ final class PhotosManager {
                 self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
                 dispatchGroup.leave()
               }
+              if #available(iOS 16, *) { request.revision = VNDetectBarcodesRequestRevision1 }
               return request
             }
             
@@ -127,8 +128,10 @@ final class PhotosManager {
 extension PhotosManager {
   ///targetSize: PHImageManagerMaximumSize 원본 사이즈 fetch
   class func fetchImageWithIdentifier(
-    _ identifier: String, targetSize: CGSize,
-    option: PHFetchOptions? = nil, imageOption: PHImageRequestOptions = PHImageRequestOptions()
+    _ identifier: String,
+    targetSize: CGSize,
+    option: PHFetchOptions? = nil,
+    imageOption: PHImageRequestOptions = PHImageRequestOptions()
   ) -> Driver<(UIImage?, String)> {
     let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: option)
     let imageManager = PHImageManager()

@@ -9,6 +9,7 @@
 import Foundation
 
 import Core
+import Domain
 
 import RxCocoa
 import RxSwift
@@ -20,10 +21,7 @@ public struct DefaultGifticonRepository: GiftiConRepository {
     
     return Observable.create() { emitter in
       gifticonList.forEach { gifticon in
-        DefaultRealm.shared.writeRealm(
-          GiftiInfoDTO,
-          writeObject: gifticon
-        )
+        
       }
       
       emitter.onNext(.success(()))
@@ -34,9 +32,7 @@ public struct DefaultGifticonRepository: GiftiConRepository {
   
   public func deleteGifticon() -> Observable<Result<Void, DefaultError>> {
     return Observable.create() { emitter in
-      DefaultRealm.shared.deleteRealm(
-        GiftiInfoDTO
-      )
+      
       
       emitter.onNext(.success(()))
       emitter.onCompleted()
