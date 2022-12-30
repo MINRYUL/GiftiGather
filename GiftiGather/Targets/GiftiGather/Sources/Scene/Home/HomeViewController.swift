@@ -230,8 +230,7 @@ extension HomeViewController {
   private func _bindGifticonFetchProgress() {
     PhotosManager.shared.gifticonFetchProgress
       .compactMap { $0 }
-      .drive(onNext: { [weak self] progress in
-        
+      .drive(onNext: { progress in
         print(progress)
       })
       .disposed(by: disposeBag)

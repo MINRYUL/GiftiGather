@@ -22,6 +22,7 @@ final class PickerCell: BaseCollectionViewCell {
   
   private lazy var _imageView: UIImageView = {
     let imageView = UIImageView()
+    imageView.tintColor = .systemGray
     imageView.contentMode = .scaleAspectFill
     imageView.translatesAutoresizingMaskIntoConstraints = false
     return imageView
@@ -40,6 +41,13 @@ final class PickerCell: BaseCollectionViewCell {
     super.viewDidInit()
     
     self._configureUI()
+  }
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    
+    self._disposeBag = DisposeBag()
+    self._imageView.image = nil
   }
   
   func display(cellModel: PickCellModel) {
