@@ -10,20 +10,10 @@ import Foundation
 
 import Core
 
-import RxSwift
-
 public struct DefaultWriteGifticon {
   
-  private var _disposeBag: DisposeBag = DisposeBag()
-  
-  
-  func writeGifticon(requestValue: WriteGifticonRequestValue) -> Observable<Result<Void, DefaultError>> {
+  func writeGifticon(requestValue: WriteGifticonRequestValue) -> Result<Void, DefaultError> {
     
-    return Observable.create() { emitter in
-      
-      emitter.onNext(.success(()))
-      
-      return Disposables.create()
-    }
+    return .success(())
   }
 }

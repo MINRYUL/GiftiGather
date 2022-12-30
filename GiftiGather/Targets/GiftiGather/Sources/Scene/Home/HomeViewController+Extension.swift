@@ -17,7 +17,7 @@ extension HomeViewController {
     self.view.addSubview(self.collectionView)
     self.view.addSubview(self.addView)
     self.addView.addSubview(self.addImage)
-//    self.addView.addSubview(self.progressView)
+    self.addView.addSubview(self.loadingView)
     
     self._configureCollectionView()
     self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
@@ -46,12 +46,10 @@ extension HomeViewController {
       self.addImage.widthAnchor.constraint(equalToConstant: 25)
     ])
     
-//    NSLayoutConstraint.activate([
-//      self.progressView.centerXAnchor.constraint(equalTo: self.addView.centerXAnchor),
-//      self.progressView.centerYAnchor.constraint(equalTo: self.addView.centerYAnchor),
-//      self.progressView.heightAnchor.constraint(equalToConstant: 30),
-//      self.progressView.widthAnchor.constraint(equalToConstant: 30)
-//    ])
+    NSLayoutConstraint.activate([
+      self.loadingView.centerXAnchor.constraint(equalTo: self.addView.centerXAnchor),
+      self.loadingView.centerYAnchor.constraint(equalTo: self.addView.centerYAnchor)
+    ])
   }
   
   private func _configureCompositionalLayout() -> UICollectionViewCompositionalLayout {

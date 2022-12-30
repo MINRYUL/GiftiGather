@@ -11,32 +11,13 @@ import Foundation
 import Core
 import Domain
 
-import RxCocoa
-import RxSwift
-
 public struct DefaultGifticonRepository: GiftiConRepository {
-  private var _disposeBag: DisposeBag = DisposeBag()
   
-  public func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Observable<Result<Void, DefaultError>> {
-    
-    return Observable.create() { emitter in
-      gifticonList.forEach { gifticon in
-        
-      }
-      
-      emitter.onNext(.success(()))
-      emitter.onCompleted()
-      return Disposables.create()
-    }
+  public func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Result<Void, DefaultError> {
+    return .success(())
   }
   
-  public func deleteGifticon() -> Observable<Result<Void, DefaultError>> {
-    return Observable.create() { emitter in
-      
-      
-      emitter.onNext(.success(()))
-      emitter.onCompleted()
-      return Disposables.create()
-    }
+  public func deleteGifticon() -> Result<Void, DefaultError> {
+    return .success(())
   }
 }

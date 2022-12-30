@@ -50,6 +50,13 @@ final class HomeViewController: BaseViewController {
     return imageView
   }()
   
+  lazy var loadingView: UIActivityIndicatorView = {
+    let loadingView = UIActivityIndicatorView(style: .medium)
+    loadingView.translatesAutoresizingMaskIntoConstraints = false
+    loadingView.color = .white
+    loadingView.isHidden = true
+    return loadingView
+  }()
   
   private var _dataSource: HomeDataSource?
   
@@ -57,10 +64,10 @@ final class HomeViewController: BaseViewController {
     didSet {
       switch self._status {
         case .none:
-//          self.progressView.isHidden = true
+          self.loadingView.stopAnimating()
           self.addImage.isHidden = false
         case .progress:
-//          self.progressView.isHidden = false
+          self.loadingView.startAnimating()
           self.addImage.isHidden = true
       }
     }
@@ -107,7 +114,6 @@ final class HomeViewController: BaseViewController {
           title: "gifticon_directly_add".localized(),
           style: UIAlertAction.Style.default,
           handler: { [weak self] _ in
-            self?._status = .progress
             self?._fetchAllIdentifier()
           }
         )

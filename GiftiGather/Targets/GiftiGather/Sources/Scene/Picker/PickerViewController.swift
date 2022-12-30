@@ -98,12 +98,6 @@ final class PickerViewController: BaseViewController {
     self._bindSelectedImageIdentifiers()
   }
   
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    
-    self.showToast("msg_add_image".localized())
-  }
-  
   private func _configureRegister() {
     PickerCell.register(to: self.collectionView)
   }

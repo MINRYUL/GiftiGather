@@ -31,6 +31,7 @@ final class PhotosManager {
   
   func fetchGifticon() -> Observable<[String]> {
     self._gifticonFetchProgress.onNext(0)
+    let lock = NSRecursiveLock()
     
     return Observable.create() { [unowned self] emitter in
       let dispatchGroup = DispatchGroup()
@@ -45,15 +46,19 @@ final class PhotosManager {
         
         PhotosManager.fetchImageWithIdentifier(
           imageAsset.localIdentifier,
-          targetSize: PHImageManagerMaximumSize
+          targetSize: CGSize(width: 300, height: 400)
         ).asObservable()
-          .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+          .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
           .subscribe(onNext : { (image, identifier) in
             guard let image = image,
                   let ciImage = CIImage(image: image) else { return }
             
             var _vnBarCodeDetectionRequest: VNDetectBarcodesRequest {
               let request = VNDetectBarcodesRequest { [unowned self] (request, error) in
+                checkImageCount += 1
+                lock.lock()
+                self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
+                lock.unlock()
                 if let _ = error as NSError? {
                   ///이미지 내 바코드 검색 실패
                   dispatchGroup.leave()
@@ -76,8 +81,6 @@ final class PhotosManager {
                   }
                 }
                 
-                checkImageCount += 1
-                self._gifticonFetchProgress.onNext(checkImageCount/Double(allImageAssets.count))
                 dispatchGroup.leave()
               }
               if #available(iOS 16, *) { request.revision = VNDetectBarcodesRequestRevision1 }

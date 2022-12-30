@@ -10,8 +10,6 @@ import Foundation
 
 import Core
 
-import RxSwift
-
 public protocol GiftiConRepository {
-  func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Observable<Result<Void, DefaultError>>
+  func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Result<Void, DefaultError>
 }
