@@ -66,8 +66,7 @@ extension Project {
           dependencies: [
             .target(name: Layer.domain.rawValue),
             .target(name: Layer.core.rawValue),
-            .external(name: "RxSwift"),
-            .external(name: "RealmSwift")
+            .external(name: "RxSwift")
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(

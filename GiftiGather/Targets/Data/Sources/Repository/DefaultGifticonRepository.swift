@@ -13,11 +13,4 @@ import Domain
 
 public struct DefaultGifticonRepository: GiftiConRepository {
   
-  public func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Result<Void, DefaultError> {
-    return .success(())
-  }
-  
-  public func deleteGifticon() -> Result<Void, DefaultError> {
-    return .success(())
-  }
 }

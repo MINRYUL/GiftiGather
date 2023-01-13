@@ -7,12 +7,3 @@
 //
 
 import Foundation
-
-import RealmSwift
-import Realm
-
-class GiftiInfoObject: Realm.Object {
-  @Persisted(primaryKey: true) var identifier: String
-  @Persisted var giftiType: String
-  @Persisted var giftiValidity: String
-}

@@ -11,5 +11,4 @@ import Foundation
 import Core
 
 public protocol GiftiConRepository {
-  func writeGifticon(gifticonList: [GiftiInfoDTO]) -> Result<Void, DefaultError>
 }
