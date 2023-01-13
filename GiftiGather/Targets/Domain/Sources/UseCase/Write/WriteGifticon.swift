@@ -11,5 +11,5 @@ import Foundation
 import Core
 
 public protocol WriteGifticon {
-  func writeGifticon(requestValue: WriteGifticonRequestValue) -> Result<Void, DefaultError>
+  func writeGifticon(requestValue: [WriteGifticonRequestValue]) -> Bool
 }

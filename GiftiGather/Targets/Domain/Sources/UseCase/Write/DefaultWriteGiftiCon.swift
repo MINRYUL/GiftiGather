@@ -9,11 +9,23 @@
 import Foundation
 
 import Core
+import DIContainer
 
-public struct DefaultWriteGifticon {
+public struct DefaultWriteGifticon: WriteGifticon {
   
-  func writeGifticon(requestValue: WriteGifticonRequestValue) -> Result<Void, DefaultError> {
-    
-    return .success(())
+  @Injected private var _repository: GiftiConRepository
+  
+  public init() { }
+  
+  public func writeGifticon(requestValue: [WriteGifticonRequestValue]) -> Bool {
+    return _repository.insertGiftiList(
+      giftiList: requestValue.map { gifti -> GiftiInfoDTO in
+          return GiftiInfoDTO(
+            identifier: gifti.identifier,
+            giftiType: gifti.giftiType,
+            giftiValidity: gifti.giftiValidity
+          )
+      }
+    )
   }
 }

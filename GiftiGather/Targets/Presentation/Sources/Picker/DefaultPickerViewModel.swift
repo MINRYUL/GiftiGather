@@ -8,6 +8,9 @@
 
 import Foundation
 
+import DIContainer
+import Domain
+
 import RxSwift
 import RxCocoa
 
@@ -25,6 +28,8 @@ public struct DefaultPickerViewModel: PickerViewModel {
   //MARK: - Output
   private let _dataSource = BehaviorSubject<[PickCellModel]>(value: [])
   private let _selectedImageIdentifiers = PublishSubject<[String]>()
+  
+  @Injected private var _writeGifticon: WriteGifticon
   
   public init() {
     self.input = PickerViewModelInput(

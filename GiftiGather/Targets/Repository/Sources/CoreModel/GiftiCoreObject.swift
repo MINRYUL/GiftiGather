@@ -10,15 +10,15 @@ import Foundation
 import CoreData
 
 public final class GiftiCoreObject: NSManagedObject {
-  @NSManaged public private(set) var identifier: String?
-  @NSManaged public var giftiType: String?
-  @NSManaged public var giftiValidity: String?
+  @NSManaged public private(set) var identifier: String
+  @NSManaged public var giftiType: String
+  @NSManaged public var giftiValidity: String
   
   public init?(
     context: NSManagedObjectContext,
     identifier: String,
-    giftiType: String?,
-    giftiValidity: String?
+    giftiType: String,
+    giftiValidity: String
   ) {
     guard let entity = NSEntityDescription.entity(
       forEntityName: CoreModelType.gifti.rawValue, in: context

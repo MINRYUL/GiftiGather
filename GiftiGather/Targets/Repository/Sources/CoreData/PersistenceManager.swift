@@ -41,11 +41,6 @@ final class PersistenceManager {
     return false
   }
   
-  @discardableResult
-  func insert(object: NSManagedObject?) -> Bool {
-    return self.saveContext()
-  }
-  
   func fetch<T: NSManagedObject>(request: NSFetchRequest<T>) -> [T] {
     do {
       let fetchResult = try self.backgroundContext.fetch(request)

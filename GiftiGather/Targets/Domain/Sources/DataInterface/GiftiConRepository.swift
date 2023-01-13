@@ -10,5 +10,8 @@ import Foundation
 
 import Core
 
-public protocol GiftiConRepository {
+public protocol GifticonRepository {
+  func insertGiftiList(giftiList: [GiftiInfoDTO]) -> Bool
+  func deleteGifti(identity: String) -> Bool
+  func fetchGiftiList() -> [GiftiInfoDTO]
 }

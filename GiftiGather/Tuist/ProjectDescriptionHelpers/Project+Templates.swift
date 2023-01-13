@@ -9,7 +9,7 @@ extension Project {
   private enum Layer: String {
     case presentaion = "Presentation"
     case domain = "Domain"
-    case data = "Data"
+    case repository = "Repository"
     case core = "Core"
     case diContainer = "DIContainer"
   }
@@ -33,6 +33,7 @@ extension Project {
             .target(name: Layer.diContainer.rawValue),
             .target(name: Layer.presentaion.rawValue),
             .target(name: Layer.domain.rawValue),
+            .target(name: Layer.repository.rawValue),
             .external(name: "Swinject"),
             .external(name: "RxSwift"),
             .external(name: "RxCocoa")
@@ -60,7 +61,7 @@ extension Project {
           ]
         ),
         Project.makeGiftiGatherFrameworkTargets(
-          name: Layer.data.rawValue,
+          name: Layer.repository.rawValue,
           bundleId: bundleId,
           platform: .iOS,
           dependencies: [
