@@ -13,6 +13,8 @@ import Swinject
 public final class Injection {
   static public let shared = Injection()
   
+  private init() { }
+  
   public var container: Container {
     get {
       guard let container = _container else {
@@ -28,8 +30,20 @@ public final class Injection {
   }
   private var _container: Container?
 
-  public func dependencyInjected(_ closer: (Container) -> (Container)) {
+  private func _dependencyInjected(_ closer: (Container) -> (Container)) {
     self._container = closer(container)
+  }
+  
+  public func injectionContainer<Interface>(
+    _ interfaceType: Interface.Type,
+    implementation: Interface
+  ) {
+    self._dependencyInjected() { container in
+      container.register(Interface.self) { _ in
+        return implementation
+      }
+      return container
+    }
   }
 }
 

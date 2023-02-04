@@ -9,6 +9,7 @@
 import Foundation
 
 public enum DefaultError: Error {
-  case write
+  case coreDataError
+  case nonExistentIndex
   case unknowned
 }

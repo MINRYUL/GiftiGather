@@ -48,6 +48,7 @@ final class PhotosManager {
           imageAsset.localIdentifier,
           targetSize: CGSize(width: 300, height: 400)
         ).asObservable()
+          .take(1)
           .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
           .subscribe(onNext : { (image, identifier) in
             guard let image = image,

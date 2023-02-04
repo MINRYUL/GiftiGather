@@ -17,7 +17,7 @@ public struct DefaultWriteGifticon: WriteGifticon {
   
   public init() { }
   
-  public func writeGifticon(requestValue: [WriteGifticonRequestValue]) -> Bool {
+  public func writeGifticon(requestValue: [GiftiInfoDTO]) -> Result<Void, DefaultError> {
     return _repository.insertGiftiList(
       giftiList: requestValue.map { gifti -> GiftiInfoDTO in
           return GiftiInfoDTO(

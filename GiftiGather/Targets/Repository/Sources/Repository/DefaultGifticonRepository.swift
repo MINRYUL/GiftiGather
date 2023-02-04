@@ -16,7 +16,7 @@ public struct DefaultGifticonRepository: GifticonRepository {
   
   public init() { }
   
-  public func insertGiftiList(giftiList: [GiftiInfoDTO]) -> Bool {
+  public func insertGiftiList(giftiList: [GiftiInfoDTO]) -> Result<Void, DefaultError> {
     let giftiList = giftiList.map { gifti -> GiftiCoreObject? in
       return GiftiCoreObject(
         context: PersistenceManager.shared.backgroundContext,
@@ -28,23 +28,23 @@ public struct DefaultGifticonRepository: GifticonRepository {
     return PersistenceManager.shared.saveContext()
   }
   
-  public func deleteGifti(identity: String) -> Bool {
+  public func deleteGifti(identity: String) -> Result<Void, DefaultError> {
     let request = NSFetchRequest<GiftiCoreObject>(entityName: CoreModelType.gifti.rawValue)
     request.predicate = NSPredicate(format: "id = %@", identity)
     let fetchResult = PersistenceManager.shared.fetch(request: request)
-    guard let fetch = fetchResult.last else { return false }
+    guard let fetch = fetchResult.last else { return .failure(DefaultError.nonExistentIndex) }
     return PersistenceManager.shared.delete(object: fetch)
   }
   
-  public func fetchGiftiList() -> [GiftiInfoDTO] {
+  public func fetchGiftiList() -> Result<[GiftiInfoDTO], DefaultError> {
     let request = NSFetchRequest<GiftiCoreObject>(entityName: CoreModelType.gifti.rawValue)
     let fetchResult = PersistenceManager.shared.fetch(request: request)
-    return fetchResult.map { result -> GiftiInfoDTO in
+    return .success(fetchResult.map { result -> GiftiInfoDTO in
       return GiftiInfoDTO(
         identifier: result.identifier,
         giftiType: result.giftiType,
         giftiValidity: result.giftiValidity
       )
-    }
+    })
   }
 }

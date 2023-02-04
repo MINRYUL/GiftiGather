@@ -10,6 +10,6 @@ import Foundation
 
 import Core
 
-public protocol WriteGifticon {
-  func writeGifticon(requestValue: [WriteGifticonRequestValue]) -> Bool
+public protocol WriteGifticon: UseCase {
+  func writeGifticon(requestValue: [GiftiInfoDTO]) -> Result<Void, DefaultError>
 }

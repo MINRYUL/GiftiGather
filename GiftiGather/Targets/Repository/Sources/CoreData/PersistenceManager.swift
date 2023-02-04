@@ -9,6 +9,8 @@
 import Foundation
 import CoreData
 
+import Core
+
 final class PersistenceManager {
   static var shared: PersistenceManager = PersistenceManager()
   
@@ -28,17 +30,17 @@ final class PersistenceManager {
     return persistentContainer.newBackgroundContext()
   }()
   
-  func saveContext() -> Bool {
+  func saveContext() -> Result<Void, DefaultError> {
     let context = self.backgroundContext
     if context.hasChanges {
       do {
         try context.save()
-        return true
+        return .success(())
       } catch {
-        assertionFailure("CoreDataStorage Unresolved error \(error), \((error as NSError).userInfo)")
+        return .failure(DefaultError.coreDataError)
       }
     }
-    return false
+    return .failure(DefaultError.unknowned)
   }
   
   func fetch<T: NSManagedObject>(request: NSFetchRequest<T>) -> [T] {
@@ -52,7 +54,7 @@ final class PersistenceManager {
   }
   
   @discardableResult
-  func delete(object: NSManagedObject) -> Bool {
+  func delete(object: NSManagedObject) -> Result<Void, DefaultError> {
     self.backgroundContext.delete(object)
     return self.saveContext()
   }

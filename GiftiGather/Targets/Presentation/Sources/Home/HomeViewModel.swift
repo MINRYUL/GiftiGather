@@ -13,12 +13,14 @@ import RxCocoa
 
 public struct HomeViewModelInput {
   public let selectedImageIdentifers: AnyObserver<[String]>
+  public let getGiftiCon: AnyObserver<Void>
 }
 
 public struct HomeViewModelOutput {
   public let filterDataSource: Driver<[HomeFilterCellModel]>
   public let photoDataSource: Driver<[HomePhotoCellModel]>
   public let noDataSource: Driver<[NoDataCellModel]>
+  public let error: Driver<Void>
 }
 
 public protocol HomeViewModel: ViewModel {
