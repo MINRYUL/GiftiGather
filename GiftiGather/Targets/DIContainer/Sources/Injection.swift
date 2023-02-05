@@ -29,11 +29,14 @@ public final class Injection {
     }
   }
   private var _container: Container?
-
+  
   private func _dependencyInjected(_ closer: (Container) -> (Container)) {
     self._container = closer(container)
   }
-  
+}
+
+//MARK: - Public
+extension Injection {
   public func injectionContainer<Interface>(
     _ interfaceType: Interface.Type,
     implementation: Interface
@@ -44,14 +47,5 @@ public final class Injection {
       }
       return container
     }
-  }
-}
-
-@propertyWrapper public struct Injected<Dependency> {
-  public let wrappedValue: Dependency
-  
-  public init() {
-    self.wrappedValue =
-    Injection.shared.container.resolve(Dependency.self)!
   }
 }

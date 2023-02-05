@@ -84,6 +84,9 @@ extension PickerViewController {
           section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
           
           return section
+        
+        case .noData:
+          return NoDataCollectionViewCell.makeCollectionLayoutSection()
           
         default: return nil
       }

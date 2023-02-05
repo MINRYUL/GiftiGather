@@ -50,7 +50,9 @@ final class PickerCell: BaseCollectionViewCell {
     self._imageView.image = nil
   }
   
-  func display(cellModel: PickCellModel) {
+  func display(cellModel: PickCellModel?) {
+    guard let cellModel = cellModel else { return }
+    
     self._imageView.setImage(with: cellModel.imageIdentifier, disposeBag: _disposeBag)
     
     switch cellModel.isCheck {

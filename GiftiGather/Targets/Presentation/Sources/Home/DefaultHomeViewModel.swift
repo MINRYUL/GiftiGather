@@ -33,6 +33,9 @@ public struct DefaultHomeViewModel: HomeViewModel {
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
   private let _error = PublishSubject<Void>()
   
+  //MARK: - Store
+  private let _storePhotoDataSource = BehaviorRelay<[HomePhotoCellModel]>(value: [])
+  
   public init() {
     self.input = HomeViewModelInput(
       selectedImageIdentifers: self._selectedImageIdentifers.asObserver(),
@@ -65,8 +68,16 @@ extension DefaultHomeViewModel {
         )
         
         switch result {
-          case .success(_): self._getGiftiCon.onNext(())
-          case .failure(_): self._error.onNext(())
+          case .success(_):
+            let photoCellModelList = imageIdentifiers.map { identifier -> HomePhotoCellModel in
+              return HomePhotoCellModel(identity: UUID(), photoLocalIentifier: identifier)
+            }
+            var store = self._storePhotoDataSource.value
+            store.append(contentsOf: photoCellModelList)
+            self._storePhotoDataSource.accept(store)
+            self._photoDataSource.onNext(photoCellModelList)
+          case .failure(_):
+            self._error.onNext(())
         }
       })
       .disposed(by: disposeBag)
@@ -111,8 +122,6 @@ extension DefaultHomeViewModel {
         title: "전체"
       )
     ])
-    
-    self._makeNoData()
   }
   
   private func _makeNoData() {

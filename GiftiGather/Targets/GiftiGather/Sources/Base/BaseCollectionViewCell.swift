@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Presentation
 
 class BaseCollectionViewCell: UICollectionViewCell {
   static var identifier: String {
@@ -28,4 +29,21 @@ class BaseCollectionViewCell: UICollectionViewCell {
   }
   
   func viewDidInit() { }
+  
+  static func dequeueReusableCell<
+    cellInterface: BaseCollectionViewCell
+  >(
+    _ cellType: cellInterface.Type,
+    collectionView: UICollectionView,
+    withReuseIdentifier: String,
+    forIndexPath: IndexPath
+  ) -> cellInterface {
+    guard let cell = collectionView.dequeueReusableCell(
+      withReuseIdentifier: withReuseIdentifier,
+      for: forIndexPath
+    ) as? cellInterface else {
+      fatalError("Cell does not exist.")
+    }
+    return cell
+  }
 }

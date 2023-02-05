@@ -29,6 +29,8 @@ public struct DefaultPickerViewModel: PickerViewModel {
   private let _dataSource = BehaviorSubject<[PickCellModel]>(value: [])
   private let _selectedImageIdentifiers = PublishSubject<[String]>()
   
+  @Injected private var _fetchGifticon: FetchGifticon
+  
   public init() {
     self.input = PickerViewModelInput(
       imageIdentifierList: self._imageIdentifierList.asObserver(),
@@ -52,11 +54,36 @@ extension DefaultPickerViewModel {
   private func _bindImageIdentifierList() {
     self._imageIdentifierList
       .map { imageIdentifierList, isCheck -> [PickCellModel] in
-        imageIdentifierList.map { identifier -> PickCellModel in
+        let result = self._fetchGifticon.fetchGifticon()
+        
+        let pickCellModelList = imageIdentifierList.map { identifier -> PickCellModel in
           return PickCellModel(
             isCheck: isCheck,
             imageIdentifier: identifier
           )
+        }
+        
+        switch result {
+          case .success(let response):
+            if response.isEmpty {
+              return pickCellModelList
+            }
+            
+            var identifierMap = [String: Void]()
+            
+            response.forEach { info in
+              identifierMap[info.identifier] = ()
+            }
+            
+            return pickCellModelList.map { model -> PickCellModel? in
+              guard let _ = identifierMap[model.imageIdentifier] else {
+                return model
+              }
+              return nil
+            }.compactMap { $0 }
+            
+          case .failure(_):
+            return pickCellModelList
         }
       }
       .bind(to: _dataSource)

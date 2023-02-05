@@ -276,13 +276,17 @@ extension HomeViewController {
 //MARK: - Apply
 extension HomeViewController {
   private func _sectionSnapShotApply(section: HomeSection, item: [AnyHashable]) {
-    DispatchQueue.global().sync {
-      guard var snapshot = self._dataSource?.snapshot() else { return }
-      item.forEach {
-        snapshot.appendItems([$0], toSection: section)
-      }
-      self._dataSource?.apply(snapshot, animatingDifferences: true)
+    guard var snapshot = self._dataSource?.snapshot() else { return }
+    item.forEach {
+      snapshot.appendItems([$0], toSection: section)
     }
+    self._dataSource?.apply(snapshot, animatingDifferences: true)
+  }
+  
+  private func _deleteSection(section: HomeSection) {
+    guard var snapshot = self._dataSource?.snapshot() else { return }
+    snapshot.deleteSections([section])
+    self._dataSource?.apply(snapshot, animatingDifferences: false)
   }
 }
 

@@ -20,7 +20,7 @@ protocol PickerViewControllerDelegate: AnyObject {
 }
 
 enum PickerSection: Int, CaseIterable {
-  case pick
+  case pick, noData
 }
 
 final class PickerViewController: BaseViewController {
@@ -88,7 +88,6 @@ final class PickerViewController: BaseViewController {
     
     self.configureUI()
     
-    self._configureRegister()
     self._configureDataSource()
     
     self._bindTableView()
@@ -98,33 +97,39 @@ final class PickerViewController: BaseViewController {
     self._bindSelectedImageIdentifiers()
   }
   
-  private func _configureRegister() {
-    PickerCell.register(to: self.collectionView)
-  }
-  
   private func _configureDataSource() {
-      let dataSource = PickerDataSource(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
-        
-        switch PickerSection.init(rawValue: indexPath.section) {
-          case .pick:
-            guard let cell = collectionView.dequeueReusableCell(
-              withReuseIdentifier: PickerCell.identifier,
-              for: indexPath
-            ) as? PickerCell,
-                  let item = item as? PickCellModel
-            else  { return UICollectionViewCell() }
-            
-            cell.display(cellModel: item)
-            
-            return cell
-            
-          default: return UICollectionViewCell()
-            
-        }
-      })
-      
-      self._dataSource = dataSource
-      collectionView.dataSource = dataSource
+    let pickRegistration = UICollectionView.CellRegistration<PickerCell, PickCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, NoDataCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let dataSource = PickerDataSource(
+      collectionView: collectionView,
+      cellProvider: {
+        (collectionView, indexPath, item) -> UICollectionViewCell in
+      switch PickerSection.init(rawValue: indexPath.section) {
+        case .pick:
+          return collectionView.dequeueConfiguredReusableCell(
+            using: pickRegistration, for: indexPath, item: item as? PickCellModel
+          )
+          
+        case .noData:
+          return collectionView.dequeueConfiguredReusableCell(
+            using: noDataRegistration, for: indexPath, item: item as? NoDataCellModel
+          )
+          
+        default: return UICollectionViewCell()
+          
+      }
+    })
+    
+    self._dataSource = dataSource
+    collectionView.dataSource = dataSource
   }
 }
 

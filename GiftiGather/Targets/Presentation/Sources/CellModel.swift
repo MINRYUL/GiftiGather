@@ -8,11 +8,11 @@
 
 import Foundation
 
-protocol CellModel: Hashable {
+public protocol CellModel: Hashable {
   var identity: UUID { get set }
 }
 
-extension CellModel {
+public extension CellModel {
   public func hash(into hasher: inout Hasher) {
     hasher.combine(identity)
   }

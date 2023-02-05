@@ -34,7 +34,34 @@ final class NoDataCollectionViewCell: BaseCollectionViewCell {
     ])
   }
   
-  func display(cellModel: NoDataCellModel) {
-    self._titleLabel.text = cellModel.titleKey.localized()
+  func display(cellModel: NoDataCellModel?) {
+    self._titleLabel.text = cellModel?.titleKey.localized()
+  }
+}
+
+//MARK: - UI
+extension NoDataCollectionViewCell {
+  static func makeCollectionLayoutSection() -> NSCollectionLayoutSection {
+    let item = NSCollectionLayoutItem(
+      layoutSize: .init(
+        widthDimension: .fractionalWidth(1),
+        heightDimension: .fractionalWidth(1)
+      )
+    )
+    item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
+    
+    let group = NSCollectionLayoutGroup.horizontal(
+      layoutSize: .init(
+        widthDimension: .fractionalWidth(1),
+        heightDimension: .fractionalWidth(1)
+      ),
+      subitems: [item]
+    )
+    
+    let section = NSCollectionLayoutSection(group: group)
+    section.orthogonalScrollingBehavior = .none
+    section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+    
+    return section
   }
 }

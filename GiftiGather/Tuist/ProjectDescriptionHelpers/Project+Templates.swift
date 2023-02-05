@@ -14,7 +14,7 @@ extension Project {
     case diContainer = "DIContainer"
   }
   
-  private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "13.0", devices: [.iphone])
+  private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "14.0", devices: [.iphone])
   
   public static func giftiGatherApp(
     name: String,

@@ -99,27 +99,7 @@ extension HomeViewController {
           return section
           
         case .nodata:
-          let item = NSCollectionLayoutItem(
-            layoutSize: .init(
-              widthDimension: .fractionalWidth(1),
-              heightDimension: .fractionalWidth(1)
-            )
-          )
-          item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
-          
-          let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(
-              widthDimension: .fractionalWidth(1),
-              heightDimension: .fractionalWidth(1)
-            ),
-            subitems: [item]
-          )
-          
-          let section = NSCollectionLayoutSection(group: group)
-          section.orthogonalScrollingBehavior = .none
-          section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-          
-          return section
+          return NoDataCollectionViewCell.makeCollectionLayoutSection()
           
         default: return nil
       }
