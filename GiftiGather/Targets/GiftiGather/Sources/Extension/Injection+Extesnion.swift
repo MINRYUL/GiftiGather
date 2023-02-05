@@ -16,12 +16,9 @@ import Swinject
 
 extension Injection {
   func injectionContainer() {
-    //MARK: - Presentation
+    //MARK: - Repository
     self.injectionContainer(
-      HomeViewModel.self, implementation: DefaultHomeViewModel()
-    )
-    self.injectionContainer(
-      PickerViewModel.self, implementation: DefaultPickerViewModel()
+      GifticonRepository.self, implementation: DefaultGifticonRepository()
     )
     
     //MARK: - Domain
@@ -32,11 +29,13 @@ extension Injection {
       FetchGifticon.self, implementation: DefaultFetchGifticon()
     )
     
-    //MARK: - Repository
+    //MARK: - Presentation
     self.injectionContainer(
-      GifticonRepository.self, implementation: DefaultGifticonRepository()
+      HomeViewModel.self, implementation: DefaultHomeViewModel()
     )
-    
+    self.injectionContainer(
+      PickerViewModel.self, implementation: DefaultPickerViewModel()
+    )
 //    self.injectionHomeContainer(injection)
 //    self.injectionPickerContainer(injection)
 //    self.injectionWriteGifticon(injection)

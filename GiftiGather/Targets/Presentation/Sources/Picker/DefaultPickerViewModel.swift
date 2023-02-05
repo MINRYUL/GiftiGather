@@ -29,8 +29,6 @@ public struct DefaultPickerViewModel: PickerViewModel {
   private let _dataSource = BehaviorSubject<[PickCellModel]>(value: [])
   private let _selectedImageIdentifiers = PublishSubject<[String]>()
   
-  @Injected private var _writeGifticon: WriteGifticon
-  
   public init() {
     self.input = PickerViewModelInput(
       imageIdentifierList: self._imageIdentifierList.asObserver(),

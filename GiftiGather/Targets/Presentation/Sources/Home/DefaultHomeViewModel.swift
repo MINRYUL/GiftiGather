@@ -21,6 +21,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
   public var output: HomeViewModelOutput
   
   @Injected private var _writeGifticon: WriteGifticon
+  @Injected private var _fetchGifticon: FetchGifticon
   
   //MARK: - Input
   private let _selectedImageIdentifers = PublishSubject<[String]>()
@@ -48,36 +49,12 @@ public struct DefaultHomeViewModel: HomeViewModel {
     self._makeMockData()
     
     self._bindSelectedImageIdentifer()
-  }
-  
-  private func _makeMockData() {
-    self._filterDataSource.onNext([
-      HomeFilterCellModel(
-        identity: UUID(),
-        title: "전체"
-      )
-    ])
-    
-    self._makeNoData()
-  }
-  
-  private func _makeNoData() {
-    self._noDataSource.onNext([
-      NoDataCellModel(identity: UUID(), titleKey: "noData")
-    ])
+    self._bindGetGiftiCon()
   }
 }
 
 //MARK: - Input Binding
 extension DefaultHomeViewModel {
-  private func _bindGetGiftiCon() {
-    self._getGiftiCon
-      .subscribe(onNext: {
-        
-      })
-      .disposed(by: disposeBag)
-  }
-  
   private func _bindSelectedImageIdentifer() {
     self._selectedImageIdentifers
       .subscribe(onNext: { imageIdentifiers in
@@ -93,5 +70,54 @@ extension DefaultHomeViewModel {
         }
       })
       .disposed(by: disposeBag)
+  }
+  
+  private func _bindGetGiftiCon() {
+    self._getGiftiCon
+      .map { _ -> [HomePhotoCellModel]? in
+        let result = self._fetchGifticon.fetchGifticon()
+        
+        switch result {
+          case .success(let response):
+            if response.isEmpty {
+              self._makeNoData()
+              return nil
+            }
+            
+            return response.map { info -> HomePhotoCellModel in
+              return HomePhotoCellModel(
+                identity: UUID(),
+                photoLocalIentifier: info.identifier
+              )
+            }
+            
+          case .failure(_):
+            self._error.onNext(())
+            return nil
+        }
+      }
+      .compactMap { $0 }
+      .bind(to: self._photoDataSource)
+      .disposed(by: disposeBag)
+  }
+}
+
+//MARK: - Making
+extension DefaultHomeViewModel {
+  private func _makeMockData() {
+    self._filterDataSource.onNext([
+      HomeFilterCellModel(
+        identity: UUID(),
+        title: "전체"
+      )
+    ])
+    
+    self._makeNoData()
+  }
+  
+  private func _makeNoData() {
+    self._noDataSource.onNext([
+      NoDataCellModel(identity: UUID(), titleKey: "noData")
+    ])
   }
 }

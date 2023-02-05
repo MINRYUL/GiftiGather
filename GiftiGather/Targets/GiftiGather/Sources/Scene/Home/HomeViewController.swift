@@ -80,7 +80,6 @@ final class HomeViewController: BaseViewController {
     super.viewDidLoad()
     
     self.configureUI()
-    
     self._configureRegister()
     self._configureDataSource()
     self._configureData()
@@ -91,6 +90,8 @@ final class HomeViewController: BaseViewController {
     self._bindNoDataSource()
     
     self._bindGifticonFetchProgress()
+    
+    self._viewModel.input.getGiftiCon.onNext(())
   }
   
   //MARK: - Action

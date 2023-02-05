@@ -17,14 +17,14 @@ public struct DefaultGifticonRepository: GifticonRepository {
   public init() { }
   
   public func insertGiftiList(giftiList: [GiftiInfoDTO]) -> Result<Void, DefaultError> {
-    let giftiList = giftiList.map { gifti -> GiftiCoreObject? in
-      return GiftiCoreObject(
+    giftiList.forEach { gifti in
+      _ = GiftiCoreObject(
         context: PersistenceManager.shared.backgroundContext,
         identifier: gifti.identifier,
         giftiType: gifti.giftiType,
         giftiValidity: gifti.giftiValidity
       )
-    }.compactMap { $0 }
+    }
     return PersistenceManager.shared.saveContext()
   }
   
@@ -38,13 +38,17 @@ public struct DefaultGifticonRepository: GifticonRepository {
   
   public func fetchGiftiList() -> Result<[GiftiInfoDTO], DefaultError> {
     let request = NSFetchRequest<GiftiCoreObject>(entityName: CoreModelType.gifti.rawValue)
-    let fetchResult = PersistenceManager.shared.fetch(request: request)
-    return .success(fetchResult.map { result -> GiftiInfoDTO in
-      return GiftiInfoDTO(
-        identifier: result.identifier,
-        giftiType: result.giftiType,
-        giftiValidity: result.giftiValidity
+    let fetchResult: [AnyObject] = PersistenceManager.shared.fetch(request: request)
+    var giftiInfoList = [GiftiInfoDTO]()
+    for fetchModel in fetchResult {
+      giftiInfoList.append(
+        GiftiInfoDTO(
+          identifier: fetchModel.identifier,
+          giftiType: fetchModel.giftiType,
+          giftiValidity: fetchModel.giftiValidity
+        )
       )
-    })
+    }
+    return .success(giftiInfoList)
   }
 }

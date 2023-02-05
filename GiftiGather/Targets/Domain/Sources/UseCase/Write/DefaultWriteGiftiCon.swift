@@ -13,7 +13,7 @@ import DIContainer
 
 public struct DefaultWriteGifticon: WriteGifticon {
   
-  @Injected private var _repository: GiftiConRepository
+  @Injected private var _repository: GifticonRepository
   
   public init() { }
   
