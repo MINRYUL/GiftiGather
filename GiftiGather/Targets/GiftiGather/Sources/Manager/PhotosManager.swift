@@ -48,7 +48,6 @@ final class PhotosManager {
           imageAsset.localIdentifier,
           targetSize: CGSize(width: 300, height: 400)
         ).asObservable()
-          .take(1)
           .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
           .subscribe(onNext : { (image, identifier) in
             guard let image = image,
@@ -137,6 +136,9 @@ extension PhotosManager {
     option: PHFetchOptions? = nil,
     imageOption: PHImageRequestOptions = PHImageRequestOptions()
   ) -> Driver<(UIImage?, String)> {
+    imageOption.isNetworkAccessAllowed = true
+    imageOption.deliveryMode = .highQualityFormat
+    
     let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: option)
     let imageManager = PHImageManager()
     
@@ -145,8 +147,6 @@ extension PhotosManager {
         .just((nil, identifier))
         .asDriver(onErrorJustReturn: (nil, identifier))
     }
-    
-    imageOption.deliveryMode = .highQualityFormat
     
     return Observable<(UIImage?, String)>.create() { emitter in
       imageManager.requestImage(
@@ -159,6 +159,8 @@ extension PhotosManager {
           emitter.onCompleted()
         })
       return Disposables.create()
-    }.asDriver(onErrorJustReturn: (nil, identifier))
+    }
+    .take(1)
+    .asDriver(onErrorJustReturn: (nil, identifier))
   }
 }
