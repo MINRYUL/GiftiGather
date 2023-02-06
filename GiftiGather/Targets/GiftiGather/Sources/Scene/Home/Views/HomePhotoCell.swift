@@ -31,7 +31,8 @@ final class HomePhotoCell: BaseCollectionViewCell {
     self._configureUI()
   }
   
-  func display(cellModel: HomePhotoCellModel) {
+  func display(cellModel: HomePhotoCellModel?) {
+    guard let cellModel = cellModel else { return }
     self._imageView.setImage(with: cellModel.photoLocalIentifier, disposeBag: _disposeBag)
   }
 }

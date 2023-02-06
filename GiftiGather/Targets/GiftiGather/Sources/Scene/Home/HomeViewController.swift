@@ -80,7 +80,6 @@ final class HomeViewController: BaseViewController {
     super.viewDidLoad()
     
     self.configureUI()
-    self._configureRegister()
     self._configureDataSource()
     self._configureData()
     self._configureGesture()
@@ -134,51 +133,39 @@ final class HomeViewController: BaseViewController {
   }
   
   //MARK: - Configure
-  private func _configureRegister() {
-    HomeFilterCell.register(to: self.collectionView)
-    HomePhotoCell.register(to: self.collectionView)
-    NoDataCollectionViewCell.register(to: self.collectionView)
-  }
-  
   private func _configureDataSource() {
+    let filterRegistration = UICollectionView.CellRegistration<HomeFilterCell, HomeFilterCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let photoRegistration = UICollectionView.CellRegistration<HomePhotoCell, HomePhotoCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, NoDataCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
       let dataSource = HomeDataSource (collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
         
         switch HomeSection.init(rawValue: indexPath.section) {
           case .filter:
-            guard let cell = collectionView.dequeueReusableCell(
-              withReuseIdentifier: HomeFilterCell.identifier,
-              for: indexPath
-            ) as? HomeFilterCell,
-                  let item = item as? HomeFilterCellModel
-            else  { return UICollectionViewCell() }
-            
-            cell.display(cellModel: item)
-            
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(
+              using: filterRegistration, for: indexPath, item: item as? HomeFilterCellModel
+            )
             
           case .photos:
-            guard let cell = collectionView.dequeueReusableCell(
-              withReuseIdentifier: HomePhotoCell.identifier,
-              for: indexPath
-            ) as? HomePhotoCell,
-                  let item = item as? HomePhotoCellModel
-            else  { return UICollectionViewCell() }
-            
-            cell.display(cellModel: item)
-            
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(
+              using: photoRegistration, for: indexPath, item: item as? HomePhotoCellModel
+            )
             
           case .nodata:
-            guard let cell = collectionView.dequeueReusableCell(
-              withReuseIdentifier: NoDataCollectionViewCell.identifier,
-              for: indexPath
-            ) as? NoDataCollectionViewCell,
-                  let item = item as? NoDataCellModel
-            else  { return UICollectionViewCell() }
-            
-            cell.display(cellModel: item)
-            
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(
+              using: noDataRegistration, for: indexPath, item: item as? NoDataCellModel
+            )
             
           default: return UICollectionViewCell()
         }

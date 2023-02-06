@@ -36,8 +36,8 @@ final class HomeFilterCell: BaseCollectionViewCell {
     self._configureUI()
   }
   
-  func display(cellModel: HomeFilterCellModel) {
-    self._titleLabel.text = cellModel.title
+  func display(cellModel: HomeFilterCellModel?) {
+    self._titleLabel.text = cellModel?.title
   }
 }
 
