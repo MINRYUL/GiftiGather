@@ -14,19 +14,28 @@ extension HomeViewController {
     self.title = "Home".localized()
     
     self.view.backgroundColor = .systemBackground
+    self.view.addSubview(self.filterCollectionView)
     self.view.addSubview(self.collectionView)
     self.view.addSubview(self.addView)
     self.addView.addSubview(self.addImage)
     self.addView.addSubview(self.loadingView)
     
     self._configureCollectionView()
+    self.filterCollectionView.collectionViewLayout = self._configureFilterCOmpositionalLayout()
     self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
   }
   
   private func _configureCollectionView() {
     
     NSLayoutConstraint.activate([
-      self.collectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+      self.filterCollectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+      self.filterCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+      self.filterCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+      self.filterCollectionView.heightAnchor.constraint(equalToConstant: 60)
+    ])
+    
+    NSLayoutConstraint.activate([
+      self.collectionView.topAnchor.constraint(equalTo: self.filterCollectionView.bottomAnchor),
       self.collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
       self.collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
       self.collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
@@ -55,48 +64,8 @@ extension HomeViewController {
   private func _configureCompositionalLayout() -> UICollectionViewCompositionalLayout {
     return UICollectionViewCompositionalLayout { (sectionNumber, env) -> NSCollectionLayoutSection? in
       switch HomeSection.init(rawValue: sectionNumber) {
-        case .filter:
-          let item = NSCollectionLayoutItem(
-            layoutSize: .init(
-              widthDimension: .estimated(100),
-              heightDimension: .absolute(35)
-            )
-          )
-          
-          let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: .init(
-              widthDimension: .estimated(100),
-              heightDimension: .estimated(35)
-            ), subitems: [item]
-          )
-          
-          let section = NSCollectionLayoutSection(group: group)
-          section.orthogonalScrollingBehavior = .continuous
-          section.contentInsets = .init(top: 10, leading: 10, bottom: 10, trailing: 10)
-          return section
-          
         case .photos:
-          let item = NSCollectionLayoutItem(
-            layoutSize: .init(
-              widthDimension: .fractionalWidth(0.5),
-              heightDimension: .fractionalWidth(0.5)
-            )
-          )
-          item.contentInsets = .init(top: 3, leading: 3, bottom: 3, trailing: 3)
-          
-          let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(
-              widthDimension: .fractionalWidth(1.0),
-              heightDimension: .fractionalWidth(0.5)
-            ),
-            subitems: [item]
-          )
-          
-          let section = NSCollectionLayoutSection(group: group)
-          section.orthogonalScrollingBehavior = .none
-          section.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-          
-          return section
+          return HomePhotoCell.makeCollectionLayoutSection()
           
         case .nodata:
           return NoDataCollectionViewCell.makeCollectionLayoutSection()
@@ -105,4 +74,16 @@ extension HomeViewController {
       }
     }
   }
+  
+  private func _configureFilterCOmpositionalLayout() -> UICollectionViewCompositionalLayout {
+    return UICollectionViewCompositionalLayout { (sectionNumber, env) -> NSCollectionLayoutSection? in
+      switch HomeFilterSection.init(rawValue: sectionNumber) {
+        case .filter:
+          return HomeFilterCell.makeCollectionLayoutSection()
+          
+        default: return nil
+      }
+    }
+  }
+
 }

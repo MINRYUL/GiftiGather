@@ -11,4 +11,5 @@ import Foundation
 public struct HomeFilterCellModel: CellModel {
   public var identity = UUID()
   public let title: String
+  public let isAdd: Bool
 }

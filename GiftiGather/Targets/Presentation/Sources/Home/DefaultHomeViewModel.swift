@@ -119,7 +119,13 @@ extension DefaultHomeViewModel {
     self._filterDataSource.onNext([
       HomeFilterCellModel(
         identity: UUID(),
-        title: "전체"
+        title: "",
+        isAdd: true
+      ),
+      HomeFilterCellModel(
+        identity: UUID(),
+        title: "전체",
+        isAdd: false
       )
     ])
   }

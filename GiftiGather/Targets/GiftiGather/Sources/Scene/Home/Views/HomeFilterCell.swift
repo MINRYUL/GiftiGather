@@ -62,3 +62,27 @@ extension HomeFilterCell {
     ])
   }
 }
+
+//MARK: - UI
+extension HomeFilterCell {
+  static func makeCollectionLayoutSection() -> NSCollectionLayoutSection {
+    let item = NSCollectionLayoutItem(
+      layoutSize: .init(
+        widthDimension: .estimated(100),
+        heightDimension: .absolute(35)
+      )
+    )
+    
+    let group = NSCollectionLayoutGroup.vertical(
+      layoutSize: .init(
+        widthDimension: .estimated(100),
+        heightDimension: .estimated(35)
+      ), subitems: [item]
+    )
+    
+    let section = NSCollectionLayoutSection(group: group)
+    section.orthogonalScrollingBehavior = .continuous
+    section.contentInsets = .init(top: 10, leading: 10, bottom: 10, trailing: 10)
+    return section
+  }
+}
