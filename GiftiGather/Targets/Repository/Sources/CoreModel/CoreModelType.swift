@@ -10,4 +10,5 @@ import Foundation
 
 public enum CoreModelType: String {
   case gifti = "Gifti"
+  case filter = "Filter"
 }

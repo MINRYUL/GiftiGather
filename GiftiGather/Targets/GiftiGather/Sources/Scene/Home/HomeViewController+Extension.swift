@@ -11,6 +11,7 @@ import UIKit
 extension HomeViewController {
   func configureUI() {
     self.navigationController?.navigationBar.prefersLargeTitles = true
+    self.navigationItem.largeTitleDisplayMode = .never
     self.title = "Home".localized()
     
     self.view.backgroundColor = .systemBackground
@@ -21,7 +22,7 @@ extension HomeViewController {
     self.addView.addSubview(self.loadingView)
     
     self._configureCollectionView()
-    self.filterCollectionView.collectionViewLayout = self._configureFilterCOmpositionalLayout()
+    self.filterCollectionView.collectionViewLayout = self._configureFilterCompositionalLayout()
     self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
   }
   
@@ -75,15 +76,20 @@ extension HomeViewController {
     }
   }
   
-  private func _configureFilterCOmpositionalLayout() -> UICollectionViewCompositionalLayout {
-    return UICollectionViewCompositionalLayout { (sectionNumber, env) -> NSCollectionLayoutSection? in
-      switch HomeFilterSection.init(rawValue: sectionNumber) {
-        case .filter:
-          return HomeFilterCell.makeCollectionLayoutSection()
-          
-        default: return nil
-      }
-    }
+  private func _configureFilterCompositionalLayout() -> UICollectionViewCompositionalLayout {
+    let configuration = UICollectionViewCompositionalLayoutConfiguration()
+    configuration.scrollDirection = .vertical
+    
+    return UICollectionViewCompositionalLayout(
+      sectionProvider: { (sectionNumber, env) -> NSCollectionLayoutSection? in
+        switch HomeFilterSection.init(rawValue: sectionNumber) {
+          case .filter:
+            return HomeFilterCell.makeCollectionLayoutSection()
+            
+          default: return nil
+        }
+      },
+      configuration: configuration
+    )
   }
-
 }

@@ -7,7 +7,9 @@
 */
 //MARK: - Basic
 "Home" = "Home";
+"filter" = "Filter";
 "add" = "add";
+"delete" = "delete";
 "gifticon" = "Digital gifts";
 "cancel" = "cancel";
 "noData" = "There are no Digital gifts added yet🥲 Please add Digital gifts!";

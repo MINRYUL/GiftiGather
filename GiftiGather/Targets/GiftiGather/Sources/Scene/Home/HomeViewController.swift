@@ -161,9 +161,9 @@ final class HomeViewController: BaseViewController {
       cell.display(cellModel: cellModel)
     }
     
-      let dataSource = HomeDataSource (
-        collectionView: collectionView,
-        cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
+    let dataSource = HomeDataSource (
+      collectionView: collectionView,
+      cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
         
         switch HomeSection.init(rawValue: indexPath.section) {
           case .photos:
@@ -179,9 +179,9 @@ final class HomeViewController: BaseViewController {
           default: return UICollectionViewCell()
         }
       })
-      
-      self._dataSource = dataSource
-      collectionView.dataSource = dataSource
+    
+    self._dataSource = dataSource
+    collectionView.dataSource = dataSource
   }
   
   private func _configureFilterCollectionView() {
@@ -351,6 +351,6 @@ extension HomeViewController: PickerViewControllerDelegate {
 //MARK: - HomeFilterAddCellDelegate
 extension HomeViewController: HomeFilterAddCellDelegate {
   func didTouchAdd() {
-    
+    self.present(FilterViewController(), animated: true)
   }
 }

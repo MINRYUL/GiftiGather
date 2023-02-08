@@ -22,7 +22,8 @@ public struct DefaultGifticonRepository: GifticonRepository {
         context: PersistenceManager.shared.backgroundContext,
         identifier: gifti.identifier,
         giftiType: gifti.giftiType,
-        giftiValidity: gifti.giftiValidity
+        giftiValidity: gifti.giftiValidity,
+        filter: gifti.filter
       )
     }
     return PersistenceManager.shared.saveContext()
@@ -45,7 +46,8 @@ public struct DefaultGifticonRepository: GifticonRepository {
         GiftiInfoDTO(
           identifier: fetchModel.identifier,
           giftiType: fetchModel.giftiType,
-          giftiValidity: fetchModel.giftiValidity
+          giftiValidity: fetchModel.giftiValidity,
+          filter: fetchModel.filter
         )
       )
     }

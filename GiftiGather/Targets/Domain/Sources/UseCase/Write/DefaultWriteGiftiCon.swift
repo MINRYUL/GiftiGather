@@ -23,7 +23,8 @@ public struct DefaultWriteGifticon: WriteGifticon {
           return GiftiInfoDTO(
             identifier: gifti.identifier,
             giftiType: gifti.giftiType,
-            giftiValidity: gifti.giftiValidity
+            giftiValidity: gifti.giftiValidity,
+            filter: gifti.filter
           )
       }
     )

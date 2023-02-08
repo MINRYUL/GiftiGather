@@ -67,9 +67,9 @@ extension HomeFilterAddCell {
     self._containerView.addSubview(_imageView)
     
     NSLayoutConstraint.activate([
-      self._containerView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 3),
+      self._containerView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 2),
       self._containerView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 3),
-      self._containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -3),
+      self._containerView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -2),
       self._containerView.widthAnchor.constraint(equalToConstant: 40)
     ])
     

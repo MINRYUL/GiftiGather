@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A380" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Filter" representedClassName="Filter" syncable="YES" codeGenerationType="class">
+        <attribute name="filter" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="Gifti" representedClassName="Gifti" syncable="YES" codeGenerationType="class">
+        <attribute name="filter" optional="YES" attributeType="String"/>
         <attribute name="giftiType" optional="YES" attributeType="String"/>
         <attribute name="giftiValidity" optional="YES" attributeType="String"/>
         <attribute name="identifier" attributeType="String"/>
