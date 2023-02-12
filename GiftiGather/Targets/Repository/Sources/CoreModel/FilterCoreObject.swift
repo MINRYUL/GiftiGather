@@ -14,7 +14,7 @@ public final class FilterCoreObject: NSManagedObject {
   
   public init?(
     context: NSManagedObjectContext,
-    identifier: String
+    filter: String
   ) {
     guard let entity = NSEntityDescription.entity(
       forEntityName: CoreModelType.filter.rawValue, in: context

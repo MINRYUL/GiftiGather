@@ -351,6 +351,15 @@ extension HomeViewController: PickerViewControllerDelegate {
 //MARK: - HomeFilterAddCellDelegate
 extension HomeViewController: HomeFilterAddCellDelegate {
   func didTouchAdd() {
-    self.present(FilterViewController(), animated: true)
+    let filterViewController = FilterViewController()
+    filterViewController.delegate = self
+    self.present(filterViewController, animated: true)
+  }
+}
+
+//MARK: - FilterViewControllerDelegate
+extension HomeViewController: FilterViewControllerDelegate {
+  func didSelectFilter(filters: [String]) {
+    
   }
 }

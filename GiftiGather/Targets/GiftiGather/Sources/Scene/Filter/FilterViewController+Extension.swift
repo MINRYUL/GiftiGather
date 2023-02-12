@@ -24,6 +24,8 @@ extension FilterViewController {
     
     self._configureAddView()
     self._configureCollectionView()
+    
+    self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
   }
   
   private func _configureAddView() {
@@ -59,5 +61,19 @@ extension FilterViewController {
       self.collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
       self.collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
     ])
+  }
+  
+  private func _configureCompositionalLayout() -> UICollectionViewCompositionalLayout {
+    return UICollectionViewCompositionalLayout { (sectionNumber, env) -> NSCollectionLayoutSection? in
+      switch FilterSection.init(rawValue: sectionNumber) {
+        case .filter:
+          return FilterCell.makeCollectionLayoutSection()
+          
+        case .noData:
+          return NoDataCollectionViewCell.makeCollectionLayoutSection()
+          
+        default: return nil
+      }
+    }
   }
 }

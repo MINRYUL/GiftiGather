@@ -20,6 +20,9 @@ extension Injection {
     self.injectionContainer(
       GifticonRepository.self, implementation: DefaultGifticonRepository()
     )
+    self.injectionContainer(
+      FilterRepository.self, implementation: DefaultFilterRepository()
+    )
     
     //MARK: - Domain
     self.injectionContainer(
@@ -28,6 +31,17 @@ extension Injection {
     self.injectionContainer(
       FetchGifticon.self, implementation: DefaultFetchGifticon()
     )
+    self.injectionContainer(
+      FetchFilter.self, implementation: DefaultFetchFilter()
+    )
+    self.injectionContainer(
+      WriteFilter.self, implementation: DefaultWriteFilter()
+    )
+    self.injectionContainer(
+      DeleteFilter.self, implementation: DefaultDeleteFilter()
+    )
+    
+    
     
     //MARK: - Presentation
     self.injectionContainer(
@@ -36,63 +50,9 @@ extension Injection {
     self.injectionContainer(
       PickerViewModel.self, implementation: DefaultPickerViewModel()
     )
-//    self.injectionHomeContainer(injection)
-//    self.injectionPickerContainer(injection)
-//    self.injectionWriteGifticon(injection)
-//    self.injectionFetchGifticon(injection)
+    self.injectionContainer(
+      FilterViewModel.self, implementation: DefaultFilterViewModel()
+    )
+    
   }
 }
-
-////MARK: - Presentation
-//extension Injection {
-//  func injectionHomeContainer(_ injection: Injection) {
-//    injection.dependencyInjected() { container in
-//      container.register(HomeViewModel.self) { _ in
-//        return DefaultHomeViewModel()
-//      }
-//      return container
-//    }
-//  }
-//
-//  func injectionPickerContainer(_ injection: Injection) {
-//    injection.dependencyInjected() { container in
-//      container.register(PickerViewModel.self) { _ in
-//        return DefaultPickerViewModel()
-//      }
-//      return container
-//    }
-//  }
-//}
-//
-////MARK: - UseCase
-//extension Injection {
-//  func injectionWriteGifticon(_ injection: Injection) {
-//    injection.dependencyInjected() { container in
-//      container.register(WriteGifticon.self) { _ in
-//        return DefaultWriteGifticon()
-//      }
-//      return container
-//    }
-//  }
-//
-//  func injectionFetchGifticon(_ injection: Injection) {
-//    injection.dependencyInjected() { container in
-//      container.register(FetchGifticon.self) { _ in
-//        return DefaultFetchGifticon()
-//      }
-//      return container
-//    }
-//  }
-//}
-//
-////MARK: - Repository
-//extension Injection {
-//  func injectionGiftiRepository(_ injection: Injection) {
-//    injection.dependencyInjected() { container in
-//      container.register(GifticonRepository.self) { _ in
-//        return DefaultGifticonRepository()
-//      }
-//      return container
-//    }
-//  }
-//}

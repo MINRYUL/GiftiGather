@@ -13,6 +13,7 @@
 "gifticon" = "Digital gifts";
 "cancel" = "cancel";
 "noData" = "There are no Digital gifts added yet🥲 Please add Digital gifts!";
+"noFilter" = "There is no filter added yet🥲 Click the top right button to add a filter!";
 
 //MARK: - Alert
 "gifticon_auto_add" = "Automatically add digital gifts";

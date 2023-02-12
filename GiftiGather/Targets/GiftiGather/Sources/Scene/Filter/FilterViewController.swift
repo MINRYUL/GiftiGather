@@ -8,13 +8,20 @@
 
 import UIKit
 
+import DIContainer
+import Presentation
+
 enum FilterSection: Int, CaseIterable {
   case filter, noData
 }
 
+protocol FilterViewControllerDelegate: AnyObject {
+  func didSelectFilter(filters: [String])
+}
+
 final class FilterViewController: BaseViewController {
   //MARK: - Typealias
-  typealias HomeDataSource = UICollectionViewDiffableDataSource<FilterSection, AnyHashable>
+  typealias FilterDataSource = UICollectionViewDiffableDataSource<FilterSection, AnyHashable>
   typealias SourceSnapshot = NSDiffableDataSourceSnapshot<FilterSection, AnyHashable>
     
   //MARK: - View
@@ -55,12 +62,25 @@ final class FilterViewController: BaseViewController {
     return view
   }()
   
+  private var _dataSource: FilterDataSource?
+  
+  //MARK: - Injection
+  @Injected private var _viewModel: FilterViewModel
+  
+  weak var delegate: FilterViewControllerDelegate?
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
     self.configureUI()
     self._configureTarget()
+    self._configureDataSource()
+    self._configureData()
+    
+    self._bindFilterDataSource()
+    self._bindNoDataDataSource()
+    
+    self._viewModel.input.getFilter.onNext(())
   }
 }
 
@@ -68,6 +88,48 @@ final class FilterViewController: BaseViewController {
 extension FilterViewController {
   private func _configureTarget() {
     self.addButton.addTarget(self, action: #selector(_addAction), for: .touchUpInside)
+  }
+  
+  private func _configureDataSource() {
+    let filterRegistration = UICollectionView.CellRegistration<FilterCell, FilterCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, NoDataCellModel> {
+      (cell, indexPath, cellModel) in
+      cell.display(cellModel: cellModel)
+    }
+    
+    let dataSource = FilterDataSource (
+      collectionView: collectionView,
+      cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
+        
+        switch FilterSection.init(rawValue: indexPath.section) {
+          case .filter:
+            return collectionView.dequeueConfiguredReusableCell(
+              using: filterRegistration, for: indexPath, item: item as? FilterCellModel
+            )
+            
+          case .noData:
+            return collectionView.dequeueConfiguredReusableCell(
+              using: noDataRegistration, for: indexPath, item: item as? NoDataCellModel
+            )
+            
+          default: return UICollectionViewCell()
+        }
+      })
+    
+    self._dataSource = dataSource
+    collectionView.dataSource = dataSource
+  }
+  
+  private func _configureData() {
+    var snapshot = SourceSnapshot()
+    FilterSection.allCases.forEach {
+      snapshot.appendSections([$0])
+    }
+    self._dataSource?.apply(snapshot, animatingDifferences: true)
   }
 }
 
@@ -101,5 +163,41 @@ extension FilterViewController {
     alert.addAction(cancelAction)
     
     self.present(alert, animated: false)
+  }
+}
+
+//MARK: - Output Binding
+extension FilterViewController {
+  private func _bindFilterDataSource() {
+    self._viewModel.output.filterDataSource
+      .drive(onNext: { [weak self] dataSource in
+        self?._sectionSnapShotApply(section: .filter, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindNoDataDataSource() {
+    self._viewModel.output.noDataSource
+      .drive(onNext: { [weak self] dataSource in
+        self?._sectionSnapShotApply(section: .noData, item: dataSource)
+      })
+      .disposed(by: disposeBag)
+  }
+}
+
+//MARK: - Apply
+extension FilterViewController {
+  private func _sectionSnapShotApply(section: FilterSection, item: [AnyHashable]) {
+    guard var snapshot = self._dataSource?.snapshot() else { return }
+    item.forEach {
+      snapshot.appendItems([$0], toSection: section)
+    }
+    self._dataSource?.apply(snapshot, animatingDifferences: true)
+  }
+  
+  private func _deleteSection(section: FilterSection) {
+    guard var snapshot = self._dataSource?.snapshot() else { return }
+    snapshot.deleteSections([section])
+    self._dataSource?.apply(snapshot, animatingDifferences: false)
   }
 }
