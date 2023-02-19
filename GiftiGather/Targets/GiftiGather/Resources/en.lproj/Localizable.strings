@@ -12,12 +12,15 @@
 "delete" = "delete";
 "gifticon" = "Digital gifts";
 "cancel" = "cancel";
+"confirm" = "confirm";
 "noData" = "There are no Digital gifts added yet🥲 Please add Digital gifts!";
 "noFilter" = "There is no filter added yet🥲 Click the top right button to add a filter!";
 
 //MARK: - Alert
 "gifticon_auto_add" = "Automatically add digital gifts";
 "gifticon_directly_add" = "Add digital gifts directly";
+"gifticon_input_filter" = "Please enter a filter to add.";
 
 //MARK: - Toast
 "mas_add_image" = "Please select an image to add!";
+"msg_already_filter" = "Filters already added.";

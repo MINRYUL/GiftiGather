@@ -11,4 +11,5 @@ import Foundation
 public struct FilterCellModel: CellModel {
   public var identity: UUID
   public var filter: String
+  public var isCheck: Bool
 }

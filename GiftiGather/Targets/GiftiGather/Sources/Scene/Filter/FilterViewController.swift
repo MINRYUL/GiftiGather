@@ -21,8 +21,8 @@ protocol FilterViewControllerDelegate: AnyObject {
 
 final class FilterViewController: BaseViewController {
   //MARK: - Typealias
-  typealias FilterDataSource = UICollectionViewDiffableDataSource<FilterSection, AnyHashable>
-  typealias SourceSnapshot = NSDiffableDataSourceSnapshot<FilterSection, AnyHashable>
+  typealias FilterDataSource = UICollectionViewDiffableDataSource<FilterSection, UUID>
+  typealias SourceSnapshot = NSDiffableDataSourceSnapshot<FilterSection, UUID>
     
   //MARK: - View
   lazy var collectionView: UICollectionView = {
@@ -62,7 +62,9 @@ final class FilterViewController: BaseViewController {
     return view
   }()
   
-  private var _dataSource: FilterDataSource?
+  private var _dataSourceManage: DataSourceSnapshotManager<FilterSection>?
+  private var _filterDataSourceMap = [UUID: FilterCellModel]()
+  private var _noDataSourceMap = [UUID: NoDataCellModel]()
   
   //MARK: - Injection
   @Injected private var _viewModel: FilterViewModel
@@ -77,8 +79,12 @@ final class FilterViewController: BaseViewController {
     self._configureDataSource()
     self._configureData()
     
+    self._bindCollectionView()
+    
     self._bindFilterDataSource()
     self._bindNoDataDataSource()
+    self._bindUpdateItem()
+    self._bindError()
     
     self._viewModel.input.getFilter.onNext(())
   }
@@ -91,14 +97,14 @@ extension FilterViewController {
   }
   
   private func _configureDataSource() {
-    let filterRegistration = UICollectionView.CellRegistration<FilterCell, FilterCellModel> {
-      (cell, indexPath, cellModel) in
-      cell.display(cellModel: cellModel)
+    let filterRegistration = UICollectionView.CellRegistration<FilterCell, UUID> {
+      [weak self] (cell, indexPath, id) in
+      cell.display(cellModel: self?._filterDataSourceMap[id])
     }
     
-    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, NoDataCellModel> {
-      (cell, indexPath, cellModel) in
-      cell.display(cellModel: cellModel)
+    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, UUID> {
+      [weak self] (cell, indexPath, id) in
+      cell.display(cellModel: self?._noDataSourceMap[id])
     }
     
     let dataSource = FilterDataSource (
@@ -108,28 +114,24 @@ extension FilterViewController {
         switch FilterSection.init(rawValue: indexPath.section) {
           case .filter:
             return collectionView.dequeueConfiguredReusableCell(
-              using: filterRegistration, for: indexPath, item: item as? FilterCellModel
+              using: filterRegistration, for: indexPath, item: item
             )
             
           case .noData:
             return collectionView.dequeueConfiguredReusableCell(
-              using: noDataRegistration, for: indexPath, item: item as? NoDataCellModel
+              using: noDataRegistration, for: indexPath, item: item
             )
             
           default: return UICollectionViewCell()
         }
       })
     
-    self._dataSource = dataSource
+    self._dataSourceManage = DataSourceSnapshotManager(dataSource: dataSource)
     collectionView.dataSource = dataSource
   }
   
   private func _configureData() {
-    var snapshot = SourceSnapshot()
-    FilterSection.allCases.forEach {
-      snapshot.appendSections([$0])
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
+    self._dataSourceManage?.configureData()
   }
 }
 
@@ -145,8 +147,27 @@ extension FilterViewController {
       title: "add".localized(),
       style: UIAlertAction.Style.default,
       handler: { [weak self] _ in
+        let controller = UIAlertController(
+          title: nil,
+          message: "gifticon_input_filter".localized(),
+          preferredStyle: .alert
+        )
+        
+        controller.addTextField { field in
+          field.borderStyle = .none
+        }
+        
+        let okAction = UIAlertAction(title: "confirm".localized(), style: .default) { action in
+          if let filter = controller.textFields?.first?.text {
+            self?._viewModel.input.storeFilter.onNext(filter)
+          }
+        }
+        
+        controller.addAction(okAction)
+        self?.present(controller, animated: true)
       }
     )
+    
     let deleteAction =  UIAlertAction(
       title: "delete".localized(),
       style: UIAlertAction.Style.destructive,
@@ -166,12 +187,24 @@ extension FilterViewController {
   }
 }
 
+//MARK: - Input Binding
+extension FilterViewController {
+  private func _bindCollectionView() {
+    self.collectionView.rx.itemSelected
+      .bind(to: self._viewModel.input.didSelectIndex)
+      .disposed(by: disposeBag)
+  }
+}
+
 //MARK: - Output Binding
 extension FilterViewController {
   private func _bindFilterDataSource() {
     self._viewModel.output.filterDataSource
       .drive(onNext: { [weak self] dataSource in
-        self?._sectionSnapShotApply(section: .filter, item: dataSource)
+        dataSource.forEach { self?._filterDataSourceMap[$0.identity] = $0 }
+        self?._dataSourceManage?.sectionAppendItems(
+          section: .filter, items: dataSource.map { return $0.identity }
+        )
       })
       .disposed(by: disposeBag)
   }
@@ -179,25 +212,29 @@ extension FilterViewController {
   private func _bindNoDataDataSource() {
     self._viewModel.output.noDataSource
       .drive(onNext: { [weak self] dataSource in
-        self?._sectionSnapShotApply(section: .noData, item: dataSource)
+        dataSource.forEach { self?._noDataSourceMap[$0.identity] = $0 }
+        self?._dataSourceManage?.sectionAppendItems(
+          section: .noData, items: dataSource.map { return $0.identity }
+        )
       })
       .disposed(by: disposeBag)
   }
-}
-
-//MARK: - Apply
-extension FilterViewController {
-  private func _sectionSnapShotApply(section: FilterSection, item: [AnyHashable]) {
-    guard var snapshot = self._dataSource?.snapshot() else { return }
-    item.forEach {
-      snapshot.appendItems([$0], toSection: section)
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
+  
+  private func _bindUpdateItem() {
+    self._viewModel.output.updateItem
+      .compactMap { $0 }
+      .drive(onNext: { [weak self] item in
+        self?._filterDataSourceMap[item.identity] = item
+        self?._dataSourceManage?.reconfigureItems(items: [item.identity])
+      })
+      .disposed(by: disposeBag)
   }
   
-  private func _deleteSection(section: FilterSection) {
-    guard var snapshot = self._dataSource?.snapshot() else { return }
-    snapshot.deleteSections([section])
-    self._dataSource?.apply(snapshot, animatingDifferences: false)
+  private func _bindError() {
+    self._viewModel.output.error
+      .drive(onNext: { [weak self] error in
+        self?.showToast(message: error.localized())
+      })
+      .disposed(by: disposeBag)
   }
 }

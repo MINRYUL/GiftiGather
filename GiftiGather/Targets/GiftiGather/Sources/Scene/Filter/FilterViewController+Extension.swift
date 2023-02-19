@@ -55,6 +55,8 @@ extension FilterViewController {
   }
   
   private func _configureCollectionView() {
+    self.collectionView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+  
     NSLayoutConstraint.activate([
       self.collectionView.topAnchor.constraint(equalTo: self.addContainerView.bottomAnchor),
       self.collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),

@@ -26,7 +26,7 @@ class BaseViewController: UIViewController {
     super.viewDidLoad()
   }
   
-  func ç(message: String) {
+  func showToast(message: String) {
     let widthValue: CGFloat = 15
     
     let toastLabel = UILabel(

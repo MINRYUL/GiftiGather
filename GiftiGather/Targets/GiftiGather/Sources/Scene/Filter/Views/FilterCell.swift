@@ -37,7 +37,17 @@ final class FilterCell: BaseCollectionViewCell {
   }
   
   func display(cellModel: FilterCellModel?) {
-    self._titleLabel.text = cellModel?.filter
+    guard let cellModel = cellModel else { return }
+    self._titleLabel.text = cellModel.filter
+    
+    switch cellModel.isCheck {
+      case true:
+        self._containerView.layer.borderColor = UIColor.systemBlue.cgColor
+        self._titleLabel.textColor = .systemBlue
+      case false:
+        self._containerView.layer.borderColor = UIColor.systemGray.cgColor
+        self._titleLabel.textColor = .label
+    }
   }
 }
 

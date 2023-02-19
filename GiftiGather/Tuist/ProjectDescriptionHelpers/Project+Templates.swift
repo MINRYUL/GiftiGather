@@ -14,7 +14,7 @@ extension Project {
     case diContainer = "DIContainer"
   }
   
-  private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "14.0", devices: [.iphone])
+  private static let deploymentTarget: DeploymentTarget = .iOS(targetVersion: "15.0", devices: [.iphone])
   
   public static func giftiGatherApp(
     name: String,
@@ -36,7 +36,8 @@ extension Project {
             .target(name: Layer.repository.rawValue),
             .external(name: "Swinject"),
             .external(name: "RxSwift"),
-            .external(name: "RxCocoa")
+            .external(name: "RxCocoa"),
+            .external(name: "ComposableArchitecture")
           ]
         )],
         Project.makeGiftiGatherFrameworkTargets(

@@ -13,12 +13,15 @@
 "delete" = "삭제";
 "gifticon" = "기프티콘";
 "cancel" = "취소";
+"confirm" = "확인";
 "noData" = "아직 추가된 기프티콘이 없어요🥲 기프티콘을 추가해주세요!";
 "noFilter" = "아직 추가된 필터가 없어요🥲 오른쪽 상단 버튼을 클릭해 필터를 추가해주세요!";
 
 //MARK: - Alert
 "gifticon_auto_add" = "기프티콘 자동 추가";
 "gifticon_directly_add" = "기프티콘 직접 추가";
+"gifticon_input_filter" = "추가할 필터를 입력해주세요.";
 
 //MARK: - Toast
 "msg_add_image" = "추가할 이미지를 선택해주세요!";
+"msg_already_filter" = "이미 추가된 필터입니다.";

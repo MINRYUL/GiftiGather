@@ -27,27 +27,34 @@ public struct DefaultFilterViewModel: FilterViewModel {
   //MARK: - Input
   private let _getFilter = PublishSubject<Void>()
   private let _storeFilter = BehaviorSubject<String?>(value: nil)
+  private let _didSelectIndex = PublishSubject<IndexPath>()
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[FilterCellModel]>(value: [])
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
+  private let _updateItem = PublishSubject<FilterCellModel?>()
+  private let _error = PublishSubject<String>()
   
   //MARK: - Store
-  private let _storeFilterList = BehaviorRelay<[String]>(value: [])
+  private let _storeDataSource = BehaviorRelay<[FilterCellModel]>(value: [])
   
   public init() {
     self.input = FilterViewModelInput(
       getFilter: self._getFilter.asObserver(),
-      storeFilter: self._storeFilter.asObserver()
+      storeFilter: self._storeFilter.asObserver(),
+      didSelectIndex: self._didSelectIndex.asObserver()
     )
     
     self.output = FilterViewModelOutput(
       filterDataSource: self._filterDataSource.asDriver(onErrorJustReturn: []),
-      noDataSource: self._noDataSource.asDriver(onErrorJustReturn: [])
+      noDataSource: self._noDataSource.asDriver(onErrorJustReturn: []),
+      updateItem: self._updateItem.asDriver(onErrorJustReturn: nil),
+      error: self._error.asDriver(onErrorJustReturn: String())
     )
     
     self._bindGetFilter()
     self._bindStoreFilter()
+    self._bindDidSelectIndex()
   }
 }
 
@@ -68,10 +75,11 @@ extension DefaultFilterViewModel {
             let filterList = response.map {
               return FilterCellModel(
                 identity: UUID(),
-                filter: $0
+                filter: $0,
+                isCheck: false
               )
             }
-            self._storeFilterList.accept(response)
+            self._storeDataSource.accept(filterList)
             self._filterDataSource.onNext(filterList)
             
           case .failure(_):
@@ -85,28 +93,59 @@ extension DefaultFilterViewModel {
     self._storeFilter
       .compactMap { $0 }
       .subscribe(onNext: { filter in
-        let filterList = self._storeFilterList.value
+        var filterList: [FilterCellModel] = self._storeDataSource.value
         
         for filterInfo in filterList {
-          if filterInfo == filter { return }
+          if filterInfo.filter == filter {
+            self._error.onNext("msg_already_filter")
+            return
+          }
         }
         
         let result = self._writeFilter.writeFilter(requestValue: filter)
-        
+
         switch result {
           case .success(_):
-            let filterList = self._storeFilterList.value
-            self._storeFilterList.accept([filterList, [filter]].flatMap { $0 })
-            self._filterDataSource.onNext([
-              FilterCellModel(
-                identity: UUID(),
-                filter: filter
-              )
-            ])
-            
+            let filterCellModel = FilterCellModel(
+              identity: UUID(),
+              filter: filter,
+              isCheck: false
+            )
+            filterList.append(filterCellModel)
+            self._storeDataSource.accept(filterList)
+            self._filterDataSource.onNext([filterCellModel])
+
           case .failure(_): return
         }
       })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidSelectIndex() {
+    self._didSelectIndex
+      .map { indexPath -> FilterCellModel? in
+        var dataSource = self._storeDataSource.value
+        var filterCellModel: FilterCellModel?
+        
+        dataSource = dataSource.enumerated().map { index, item in
+          switch index == indexPath.item {
+            case true:
+              let changeItem = FilterCellModel(
+                identity: item.identity,
+                filter: item.filter,
+                isCheck: !item.isCheck
+              )
+              filterCellModel = changeItem
+              return changeItem
+            case false: return item
+          }
+        }
+        
+        self._storeDataSource.accept(dataSource)
+        return filterCellModel
+      }
+      .compactMap { $0 }
+      .bind(to: _updateItem)
       .disposed(by: disposeBag)
   }
 }

@@ -14,11 +14,14 @@ import RxCocoa
 public struct FilterViewModelInput {
   public let getFilter: AnyObserver<Void>
   public let storeFilter: AnyObserver<String?>
+  public let didSelectIndex: AnyObserver<IndexPath>
 }
 
 public struct FilterViewModelOutput {
   public let filterDataSource: Driver<[FilterCellModel]>
   public let noDataSource: Driver<[NoDataCellModel]>
+  public let updateItem: Driver<FilterCellModel?>
+  public let error: Driver<String>
 }
 
 public protocol FilterViewModel: ViewModel {

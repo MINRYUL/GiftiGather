@@ -13,11 +13,11 @@ public protocol CellModel: Hashable {
 }
 
 public extension CellModel {
-  public func hash(into hasher: inout Hasher) {
+  func hash(into hasher: inout Hasher) {
     hasher.combine(identity)
   }
-  
-  public static func == (lhs: Self, rhs: Self) -> Bool {
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.identity == rhs.identity
   }
 }
