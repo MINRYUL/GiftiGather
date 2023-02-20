@@ -14,6 +14,7 @@ import RxCocoa
 public struct HomeViewModelInput {
   public let selectedImageIdentifers: AnyObserver<[String]>
   public let getGiftiCon: AnyObserver<Void>
+  public let selectedFilterList: AnyObserver<[String]>
 }
 
 public struct HomeViewModelOutput {

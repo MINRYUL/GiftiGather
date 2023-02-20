@@ -26,6 +26,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
   //MARK: - Input
   private let _selectedImageIdentifers = PublishSubject<[String]>()
   private let _getGiftiCon = PublishSubject<Void>()
+  private let _selectedFilterList = BehaviorSubject<[String]>(value: [])
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[HomeFilterCellModel]>(value: [])
@@ -39,7 +40,8 @@ public struct DefaultHomeViewModel: HomeViewModel {
   public init() {
     self.input = HomeViewModelInput(
       selectedImageIdentifers: self._selectedImageIdentifers.asObserver(),
-      getGiftiCon: self._getGiftiCon.asObserver()
+      getGiftiCon: self._getGiftiCon.asObserver(),
+      selectedFilterList: self._selectedFilterList.asObserver()
     )
     
     self.output = HomeViewModelOutput(
@@ -110,6 +112,10 @@ extension DefaultHomeViewModel {
       .compactMap { $0 }
       .bind(to: self._photoDataSource)
       .disposed(by: disposeBag)
+  }
+  
+  private func _bindSelectedFilterList() {
+//    self._selectedFilterList
   }
 }
 

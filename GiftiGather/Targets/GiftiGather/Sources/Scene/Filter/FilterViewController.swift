@@ -22,7 +22,6 @@ protocol FilterViewControllerDelegate: AnyObject {
 final class FilterViewController: BaseViewController {
   //MARK: - Typealias
   typealias FilterDataSource = UICollectionViewDiffableDataSource<FilterSection, UUID>
-  typealias SourceSnapshot = NSDiffableDataSourceSnapshot<FilterSection, UUID>
     
   //MARK: - View
   lazy var collectionView: UICollectionView = {
@@ -62,6 +61,27 @@ final class FilterViewController: BaseViewController {
     return view
   }()
   
+  lazy var confirmContainerView: UIView = {
+    let view = UIView()
+    view.backgroundColor = .background
+    view.translatesAutoresizingMaskIntoConstraints = false
+    view.layer.cornerRadius = 10
+    view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+    return view
+  }()
+  
+  lazy var confirmButton: UIButton = {
+    let button = UIButton()
+    button.translatesAutoresizingMaskIntoConstraints = false
+    button.setTitle("confirm".localized(), for: .normal)
+    button.setTitleColor(.white, for: .normal)
+    button.backgroundColor = .systemBlue
+    button.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+    button.layer.cornerRadius = 25
+    button.clipsToBounds = true
+    return button
+  }()
+  
   private var _dataSourceManage: DataSourceSnapshotManager<FilterSection>?
   private var _filterDataSourceMap = [UUID: FilterCellModel]()
   private var _noDataSourceMap = [UUID: NoDataCellModel]()
@@ -75,9 +95,11 @@ final class FilterViewController: BaseViewController {
     super.viewDidLoad()
     
     self.configureUI()
+    self._configureAction()
     self._configureTarget()
     self._configureDataSource()
     self._configureData()
+    
     
     self._bindCollectionView()
     
@@ -87,6 +109,17 @@ final class FilterViewController: BaseViewController {
     self._bindError()
     
     self._viewModel.input.getFilter.onNext(())
+  }
+}
+
+//MARK: - Action
+extension FilterViewController {
+  private func _configureAction() {
+    self.confirmButton.addTarget(self, action: #selector(_confirmAction), for: .touchUpInside)
+  }
+  
+  @objc private func _confirmAction() {
+    self._viewModel.input.didTouchConfirm.onNext(())
   }
 }
 
@@ -234,6 +267,14 @@ extension FilterViewController {
     self._viewModel.output.error
       .drive(onNext: { [weak self] error in
         self?.showToast(message: error.localized())
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindConfirm() {
+    self._viewModel.output.confirm
+      .drive(onNext: { [weak self] filter in
+        self?.delegate?.didSelectFilter(filters: filter)
       })
       .disposed(by: disposeBag)
   }

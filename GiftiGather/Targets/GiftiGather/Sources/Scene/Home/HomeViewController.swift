@@ -25,11 +25,8 @@ enum HomeFilterSection: Int, CaseIterable {
 
 final class HomeViewController: BaseViewController {
   //MARK: - Typealias
-  typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, AnyHashable>
-  typealias SourceSnapshot = NSDiffableDataSourceSnapshot<HomeSection, AnyHashable>
-  
-  typealias HomeFilterDataSource = UICollectionViewDiffableDataSource<HomeFilterSection, AnyHashable>
-  typealias FilterSourceSnapshot = NSDiffableDataSourceSnapshot<HomeFilterSection, AnyHashable>
+  typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, UUID>
+  typealias HomeFilterDataSource = UICollectionViewDiffableDataSource<HomeFilterSection, UUID>
   
   //MARK: - View
   lazy var collectionView: UICollectionView = {
@@ -73,8 +70,11 @@ final class HomeViewController: BaseViewController {
     return loadingView
   }()
   
-  private var _dataSource: HomeDataSource?
-  private var _filterDataSource: HomeFilterDataSource?
+  private var _filterDataSourceManager: DataSourceSnapshotManager<HomeFilterSection>?
+  private var _photoDataSourceManager: DataSourceSnapshotManager<HomeSection>?
+  private var _filterDataSourceMap = [UUID: HomeFilterCellModel]()
+  private var _photoDataSourceMap = [UUID: HomePhotoCellModel]()
+  private var _noDataSourceMap = [UUID: NoDataCellModel]()
   
   private var _status: HomeViewStatus = .none {
     didSet {
@@ -151,14 +151,14 @@ final class HomeViewController: BaseViewController {
   
   //MARK: - Configure
   private func _configureDataSource() {
-    let photoRegistration = UICollectionView.CellRegistration<HomePhotoCell, HomePhotoCellModel> {
-      (cell, indexPath, cellModel) in
-      cell.display(cellModel: cellModel)
+    let photoRegistration = UICollectionView.CellRegistration<HomePhotoCell, UUID> {
+      [weak self] (cell, indexPath, id) in
+      cell.display(cellModel: self?._photoDataSourceMap[id])
     }
     
-    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, NoDataCellModel> {
-      (cell, indexPath, cellModel) in
-      cell.display(cellModel: cellModel)
+    let noDataRegistration = UICollectionView.CellRegistration<NoDataCollectionViewCell, UUID> {
+      [weak self] (cell, indexPath, id) in
+      cell.display(cellModel: self?._noDataSourceMap[id])
     }
     
     let dataSource = HomeDataSource (
@@ -168,45 +168,45 @@ final class HomeViewController: BaseViewController {
         switch HomeSection.init(rawValue: indexPath.section) {
           case .photos:
             return collectionView.dequeueConfiguredReusableCell(
-              using: photoRegistration, for: indexPath, item: item as? HomePhotoCellModel
+              using: photoRegistration, for: indexPath, item: item
             )
             
           case .nodata:
             return collectionView.dequeueConfiguredReusableCell(
-              using: noDataRegistration, for: indexPath, item: item as? NoDataCellModel
+              using: noDataRegistration, for: indexPath, item: item
             )
             
           default: return UICollectionViewCell()
         }
       })
     
-    self._dataSource = dataSource
+    self._photoDataSourceManager = DataSourceSnapshotManager(dataSource: dataSource)
     collectionView.dataSource = dataSource
   }
   
   private func _configureFilterCollectionView() {
-    let filterRegistration = UICollectionView.CellRegistration<HomeFilterCell, HomeFilterCellModel> {
-      (cell, indexPath, cellModel) in
-      cell.display(cellModel: cellModel)
+    let filterRegistration = UICollectionView.CellRegistration<HomeFilterCell, UUID> {
+      [weak self] (cell, indexPath, id) in
+      cell.display(cellModel: self?._filterDataSourceMap[id])
     }
     
-    let addRegistration = UICollectionView.CellRegistration<HomeFilterAddCell, String> {
+    let addRegistration = UICollectionView.CellRegistration<HomeFilterAddCell, UUID> {
       [weak self] (cell, _, _)  in
       cell.delegate = self
     }
     
     let dataSource = HomeFilterDataSource (
       collectionView: filterCollectionView,
-      cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell in
+      cellProvider: { [weak self] (collectionView, indexPath, item) -> UICollectionViewCell in
         
         switch HomeFilterSection.init(rawValue: indexPath.section) {
           case .filter:
-            guard let item = item as? HomeFilterCellModel else { return UICollectionViewCell() }
+            guard let filterModel = self?._filterDataSourceMap[item] else { return UICollectionViewCell() }
             
-            switch item.isAdd {
+            switch filterModel.isAdd {
               case true:
                 return collectionView.dequeueConfiguredReusableCell(
-                  using: addRegistration, for: indexPath, item: item.identity.uuidString
+                  using: addRegistration, for: indexPath, item: item
                 )
                 
               case false:
@@ -217,24 +217,15 @@ final class HomeViewController: BaseViewController {
             
           default: return UICollectionViewCell()
         }
-      })
-      
-      self._filterDataSource = dataSource
-      filterCollectionView.dataSource = dataSource
+      }
+    )
+    self._filterDataSourceManager = DataSourceSnapshotManager(dataSource: dataSource)
+    filterCollectionView.dataSource = dataSource
   }
   
   private func _configureData() {
-    var filterSnapshot = FilterSourceSnapshot()
-    HomeFilterSection.allCases.forEach {
-      filterSnapshot.appendSections([$0])
-    }
-    self._filterDataSource?.apply(filterSnapshot, animatingDifferences: true)
-    
-    var snapshot = SourceSnapshot()
-    HomeSection.allCases.forEach {
-      snapshot.appendSections([$0])
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
+    self._filterDataSourceManager?.configureData()
+    self._photoDataSourceManager?.configureData()
   }
   
   private func _configureGesture() {
@@ -248,7 +239,10 @@ extension HomeViewController {
   private func _bindFilterDataSource() {
     self._viewModel.output.filterDataSource
       .drive(onNext: { [weak self] dataSource in
-        self?._sectionSnapShotApply(section: .filter, item: dataSource)
+        dataSource.forEach { self?._filterDataSourceMap[$0.identity] = $0 }
+        self?._filterDataSourceManager?.sectionAppendItems(
+          section: .filter, items: dataSource.map { return $0.identity }
+        )
       })
       .disposed(by: disposeBag)
   }
@@ -256,7 +250,10 @@ extension HomeViewController {
   private func _bindPhotoDataSource() {
     self._viewModel.output.photoDataSource
       .drive(onNext: { [weak self] dataSource in
-        self?._sectionSnapShotApply(section: .photos, item: dataSource)
+        dataSource.forEach { self?._photoDataSourceMap[$0.identity] = $0 }
+        self?._photoDataSourceManager?.sectionAppendItems(
+          section: .photos, items: dataSource.map { return $0.identity }
+        )
       })
       .disposed(by: disposeBag)
   }
@@ -264,7 +261,10 @@ extension HomeViewController {
   private func _bindNoDataSource() {
     self._viewModel.output.noDataSource
       .drive(onNext: { [weak self] dataSource in
-        self?._sectionSnapShotApply(section: .nodata, item: dataSource)
+        dataSource.forEach { self?._noDataSourceMap[$0.identity] = $0 }
+        self?._photoDataSourceManager?.sectionAppendItems(
+          section: .nodata, items: dataSource.map { return $0.identity }
+        )
       })
       .disposed(by: disposeBag)
   }
@@ -314,31 +314,6 @@ extension HomeViewController {
   }
 }
 
-//MARK: - Apply
-extension HomeViewController {
-  private func _sectionSnapShotApply(section: HomeSection, item: [AnyHashable]) {
-    guard var snapshot = self._dataSource?.snapshot() else { return }
-    item.forEach {
-      snapshot.appendItems([$0], toSection: section)
-    }
-    self._dataSource?.apply(snapshot, animatingDifferences: true)
-  }
-  
-  private func _sectionSnapShotApply(section: HomeFilterSection, item: [AnyHashable]) {
-    guard var snapshot = self._filterDataSource?.snapshot() else { return }
-    item.forEach {
-      snapshot.appendItems([$0], toSection: section)
-    }
-    self._filterDataSource?.apply(snapshot, animatingDifferences: true)
-  }
-  
-  private func _deleteSection(section: HomeSection) {
-    guard var snapshot = self._dataSource?.snapshot() else { return }
-    snapshot.deleteSections([section])
-    self._dataSource?.apply(snapshot, animatingDifferences: false)
-  }
-}
-
 //MARK: - PickerViewControllerDelegate
 extension HomeViewController: PickerViewControllerDelegate {
   func didSelectImageIdentifiers(
@@ -360,6 +335,6 @@ extension HomeViewController: HomeFilterAddCellDelegate {
 //MARK: - FilterViewControllerDelegate
 extension HomeViewController: FilterViewControllerDelegate {
   func didSelectFilter(filters: [String]) {
-    
+    self._viewModel.input.selectedFilterList.onNext(filters)
   }
 }

@@ -17,13 +17,17 @@ extension FilterViewController {
     self.view.backgroundColor = .systemBackground
     self.view.addSubview(self.addContainerView)
     self.view.addSubview(self.collectionView)
+    self.view.addSubview(self.confirmContainerView)
     
     self.addContainerView.addSubview(self.titleLabel)
     self.addContainerView.addSubview(self.addButton)
     self.addContainerView.addSubview(self.addFooterView)
     
+    self.confirmContainerView.addSubview(self.confirmButton)
+    
     self._configureAddView()
     self._configureCollectionView()
+    self._configureConfirmView()
     
     self.collectionView.collectionViewLayout = self._configureCompositionalLayout()
   }
@@ -62,6 +66,30 @@ extension FilterViewController {
       self.collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
       self.collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
       self.collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+    ])
+  }
+  
+  private func _configureConfirmView() {
+    NSLayoutConstraint.activate([
+      self.confirmContainerView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+      self.confirmContainerView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+      self.confirmContainerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+    ])
+    
+    NSLayoutConstraint.activate([
+      self.confirmButton.topAnchor.constraint(
+        equalTo: self.confirmContainerView.topAnchor, constant: 20
+      ),
+      self.confirmButton.leadingAnchor.constraint(
+        equalTo: self.confirmContainerView.leadingAnchor, constant: 30
+      ),
+      self.confirmButton.trailingAnchor.constraint(
+        equalTo: self.confirmContainerView.trailingAnchor, constant: -30
+      ),
+      self.confirmButton.bottomAnchor.constraint(
+        equalTo: self.confirmContainerView.bottomAnchor, constant: -30
+      ),
+      self.confirmButton.heightAnchor.constraint(equalToConstant: 50)
     ])
   }
   

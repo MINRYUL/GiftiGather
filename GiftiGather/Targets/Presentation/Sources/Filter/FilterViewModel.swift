@@ -15,6 +15,7 @@ public struct FilterViewModelInput {
   public let getFilter: AnyObserver<Void>
   public let storeFilter: AnyObserver<String?>
   public let didSelectIndex: AnyObserver<IndexPath>
+  public let didTouchConfirm: AnyObserver<Void>
 }
 
 public struct FilterViewModelOutput {
@@ -22,6 +23,7 @@ public struct FilterViewModelOutput {
   public let noDataSource: Driver<[NoDataCellModel]>
   public let updateItem: Driver<FilterCellModel?>
   public let error: Driver<String>
+  public let confirm: Driver<[String]>
 }
 
 public protocol FilterViewModel: ViewModel {

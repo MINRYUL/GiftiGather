@@ -28,33 +28,39 @@ public struct DefaultFilterViewModel: FilterViewModel {
   private let _getFilter = PublishSubject<Void>()
   private let _storeFilter = BehaviorSubject<String?>(value: nil)
   private let _didSelectIndex = PublishSubject<IndexPath>()
+  private let _didTouchConfirm = PublishSubject<Void>()
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[FilterCellModel]>(value: [])
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
   private let _updateItem = PublishSubject<FilterCellModel?>()
   private let _error = PublishSubject<String>()
+  private let _confirm = PublishSubject<[String]>()
   
   //MARK: - Store
   private let _storeDataSource = BehaviorRelay<[FilterCellModel]>(value: [])
+  
   
   public init() {
     self.input = FilterViewModelInput(
       getFilter: self._getFilter.asObserver(),
       storeFilter: self._storeFilter.asObserver(),
-      didSelectIndex: self._didSelectIndex.asObserver()
+      didSelectIndex: self._didSelectIndex.asObserver(),
+      didTouchConfirm: self._didTouchConfirm.asObserver()
     )
     
     self.output = FilterViewModelOutput(
       filterDataSource: self._filterDataSource.asDriver(onErrorJustReturn: []),
       noDataSource: self._noDataSource.asDriver(onErrorJustReturn: []),
       updateItem: self._updateItem.asDriver(onErrorJustReturn: nil),
-      error: self._error.asDriver(onErrorJustReturn: String())
+      error: self._error.asDriver(onErrorJustReturn: String()),
+      confirm: self._confirm.asDriver(onErrorJustReturn: [])
     )
     
     self._bindGetFilter()
     self._bindStoreFilter()
     self._bindDidSelectIndex()
+    self._bindDidTouchConfirm()
   }
 }
 
@@ -146,6 +152,17 @@ extension DefaultFilterViewModel {
       }
       .compactMap { $0 }
       .bind(to: _updateItem)
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidTouchConfirm() {
+    self._confirm
+      .map { _ -> [String] in
+        return self._storeDataSource.value.map { item -> String in
+          return item.filter
+        }
+      }
+      .bind(to: self._confirm)
       .disposed(by: disposeBag)
   }
 }
