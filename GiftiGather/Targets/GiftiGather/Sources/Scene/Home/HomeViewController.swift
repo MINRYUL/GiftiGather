@@ -104,6 +104,7 @@ final class HomeViewController: BaseViewController {
     self._bindFilterDataSource()
     self._bindPhotoDataSource()
     self._bindNoDataSource()
+    self._bindDidDeleteNoData()
     
     self._bindGifticonFetchProgress()
     
@@ -314,6 +315,17 @@ extension HomeViewController {
         self?._presentToPickerViewController(
           imageIdentifier: imageIdentifiers, isAllSelect: false
         )
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidDeleteNoData() {
+    self._viewModel.output.didDeleteNoData
+      .drive(onNext: { [weak self] noData in
+        noData.forEach { identity in
+          self?._noDataSourceMap[identity] = nil
+        }
+        self?._photoDataSourceManager?.deleteItems(items: noData)
       })
       .disposed(by: disposeBag)
   }

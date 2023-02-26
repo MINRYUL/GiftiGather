@@ -21,6 +21,7 @@ public struct HomeViewModelOutput {
   public let filterDataSource: Driver<[HomeFilterCellModel]>
   public let photoDataSource: Driver<[HomePhotoCellModel]>
   public let noDataSource: Driver<[NoDataCellModel]>
+  public let didDeleteNoData: Driver<[UUID]>
   public let error: Driver<Void>
 }
 

@@ -32,6 +32,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
   private let _filterDataSource = BehaviorSubject<[HomeFilterCellModel]>(value: [])
   private let _photoDataSource = BehaviorSubject<[HomePhotoCellModel]>(value: [])
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
+  private let _didDeleteNoData = PublishSubject<[UUID]>()
   private let _error = PublishSubject<Void>()
   
   //MARK: - Store
@@ -48,6 +49,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
       filterDataSource: self._filterDataSource.asDriver(onErrorJustReturn: []),
       photoDataSource: self._photoDataSource.asDriver(onErrorJustReturn: []),
       noDataSource: self._noDataSource.asDriver(onErrorJustReturn: []),
+      didDeleteNoData: self._didDeleteNoData.asDriver(onErrorJustReturn: []),
       error: self._error.asDriver(onErrorJustReturn: ())
     )
     
@@ -78,6 +80,14 @@ extension DefaultHomeViewModel {
             store.append(contentsOf: photoCellModelList)
             self._storePhotoDataSource.accept(store)
             self._photoDataSource.onNext(photoCellModelList)
+            
+            guard let noDataSource = try? self._noDataSource.value(),
+                  let noData = noDataSource.first else {
+              return
+            }
+            
+            self._didDeleteNoData.onNext([noData.identity])
+            
           case .failure(_):
             self._error.onNext(())
         }
