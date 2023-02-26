@@ -182,6 +182,24 @@ final class HomeViewController: BaseViewController {
     
     self._photoDataSourceManager = DataSourceSnapshotManager(dataSource: dataSource)
     collectionView.dataSource = dataSource
+    
+    collectionView.delegate = self
+    
+    collectionView.rx.itemHighlighted
+      .asDriver()
+      .drive(onNext: { [weak self] indexPath in
+        guard let collectionView = self?.collectionView else { return }
+        UICollectionView.itemHighlighted(collecionView: collectionView, indexPath: indexPath)
+      })
+      .disposed(by: disposeBag)
+    
+    collectionView.rx.itemUnhighlighted
+      .asDriver()
+      .drive(onNext: { [weak self] indexPath in
+        guard let collectionView = self?.collectionView else { return }
+        UICollectionView.itemUnhighlighted(collecionView: collectionView, indexPath: indexPath)
+      })
+      .disposed(by: disposeBag)
   }
   
   private func _configureFilterCollectionView() {
@@ -336,5 +354,20 @@ extension HomeViewController: HomeFilterAddCellDelegate {
 extension HomeViewController: FilterViewControllerDelegate {
   func didSelectFilter(filters: [String]) {
     self._viewModel.input.selectedFilterList.onNext(filters)
+  }
+}
+
+//MARK: - CollectionViewDelegate
+extension HomeViewController: UICollectionViewDelegate {
+  func collectionView(
+    _ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath
+  ) {
+    UICollectionView.itemHighlighted(collecionView: collectionView, indexPath: indexPath)
+  }
+  
+  func collectionView(
+    _ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath
+  ) {
+    UICollectionView.itemUnhighlighted(collecionView: collectionView, indexPath: indexPath)
   }
 }
