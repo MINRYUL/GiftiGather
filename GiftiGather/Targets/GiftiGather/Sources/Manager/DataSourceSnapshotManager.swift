@@ -64,4 +64,10 @@ final class DataSourceSnapshotManager<Section: Hashable> where Section: CaseIter
     snapshot.deleteSections([section])
     self._dataSource.apply(snapshot, animatingDifferences: false)
   }
+  
+  func deleteItems(items: [UUID]) {
+    var snapshot = self._dataSource.snapshot()
+    snapshot.deleteItems(items)
+    self._dataSource.apply(snapshot, animatingDifferences: false)
+  }
 }

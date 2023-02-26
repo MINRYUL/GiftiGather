@@ -31,7 +31,7 @@ public struct DefaultGifticonRepository: GifticonRepository {
   
   public func deleteGifti(identity: String) -> Result<Void, DefaultError> {
     let request = NSFetchRequest<GiftiCoreObject>(entityName: CoreModelType.gifti.rawValue)
-    request.predicate = NSPredicate(format: "id = %@", identity)
+    request.predicate = NSPredicate(format: "identity = %@", identity)
     let fetchResult = PersistenceManager.shared.fetch(request: request)
     guard let fetch = fetchResult.last else { return .failure(DefaultError.nonExistentIndex) }
     return PersistenceManager.shared.delete(object: fetch)

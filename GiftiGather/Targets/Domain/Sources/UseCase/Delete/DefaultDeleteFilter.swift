@@ -13,11 +13,11 @@ import DIContainer
 
 public struct DefaultDeleteFilter: DeleteFilter {
   
-  @Injected private var _repository: GifticonRepository
+  @Injected private var _repository: FilterRepository
   
   public init() { }
   
   public func deleteFilter(requestValue: String) -> Result<Void, DefaultError> {
-    return _repository.deleteGifti(identity: requestValue)
+    return _repository.deleteFilter(identity: requestValue)
   }
 }

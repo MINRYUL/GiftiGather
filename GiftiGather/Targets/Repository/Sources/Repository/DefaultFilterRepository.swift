@@ -27,10 +27,13 @@ public struct DefaultFilterRepository: FilterRepository {
   
   public func deleteFilter(identity: String) -> Result<Void, DefaultError> {
     let request = NSFetchRequest<FilterCoreObject>(entityName: CoreModelType.filter.rawValue)
-    request.predicate = NSPredicate(format: "id = %@", identity)
-    let fetchResult = PersistenceManager.shared.fetch(request: request)
-    guard let fetch = fetchResult.last else { return .failure(DefaultError.nonExistentIndex) }
-    return PersistenceManager.shared.delete(object: fetch)
+    request.predicate = NSPredicate(format: "filter = %@", identity)
+    let fetchResult: [AnyObject] = PersistenceManager.shared.fetch(request: request)
+    if fetchResult.isEmpty { return .failure(DefaultError.coreDataError) }
+    guard let fetch = fetchResult[0] as? NSManagedObject else {
+      return .failure(DefaultError.coreDataError)
+    }
+     return PersistenceManager.shared.delete(object: fetch)
   }
   
   public func fetchFilter() -> Result<[String], DefaultError> {

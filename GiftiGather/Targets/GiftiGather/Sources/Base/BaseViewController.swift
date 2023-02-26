@@ -48,10 +48,12 @@ class BaseViewController: UIViewController {
     toastLabel.clipsToBounds  =  true
     self.view.addSubview(toastLabel)
     
-    UIView.animate(withDuration: 4.0, delay: 0.1, options: .curveEaseOut, animations: {
-      toastLabel.alpha = 0.0
-    }, completion: {(isCompleted) in
-      toastLabel.removeFromSuperview()
-    })
+    let _ = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+      UIView.animate(withDuration: 1.0, delay: 0.1, options: .curveEaseOut, animations: {
+        toastLabel.alpha = 0.0
+      }, completion: {(isCompleted) in
+        toastLabel.removeFromSuperview()
+      })
+    }
   }
 }

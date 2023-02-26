@@ -18,40 +18,39 @@ extension Injection {
   func injectionContainer() {
     //MARK: - Repository
     self.injectionContainer(
-      GifticonRepository.self, implementation: DefaultGifticonRepository()
+      GifticonRepository.self, implementation: { DefaultGifticonRepository() }
     )
     self.injectionContainer(
-      FilterRepository.self, implementation: DefaultFilterRepository()
+      FilterRepository.self, implementation: { DefaultFilterRepository() }
     )
     
     //MARK: - Domain
     self.injectionContainer(
-      WriteGifticon.self, implementation: DefaultWriteGifticon()
+      WriteGifticon.self, implementation: { DefaultWriteGifticon() }
     )
     self.injectionContainer(
-      FetchGifticon.self, implementation: DefaultFetchGifticon()
+      FetchGifticon.self, implementation: { DefaultFetchGifticon() }
     )
     self.injectionContainer(
-      FetchFilter.self, implementation: DefaultFetchFilter()
+      FetchFilter.self, implementation: { DefaultFetchFilter() }
     )
     self.injectionContainer(
-      WriteFilter.self, implementation: DefaultWriteFilter()
+      WriteFilter.self, implementation: { DefaultWriteFilter() }
     )
     self.injectionContainer(
-      DeleteFilter.self, implementation: DefaultDeleteFilter()
+      DeleteFilter.self, implementation: { DefaultDeleteFilter() }
     )
-    
-    
     
     //MARK: - Presentation
+    
     self.injectionContainer(
-      HomeViewModel.self, implementation: DefaultHomeViewModel()
+      HomeViewModel.self, implementation: { DefaultHomeViewModel() }
     )
     self.injectionContainer(
-      PickerViewModel.self, implementation: DefaultPickerViewModel()
+      PickerViewModel.self, implementation: { DefaultPickerViewModel() }
     )
     self.injectionContainer(
-      FilterViewModel.self, implementation: DefaultFilterViewModel()
+      FilterViewModel.self, implementation: { DefaultFilterViewModel() }
     )
     
   }

@@ -39,12 +39,24 @@ public final class Injection {
 extension Injection {
   public func injectionContainer<Interface>(
     _ interfaceType: Interface.Type,
+    implementation: @escaping () -> Interface
+  ) {
+    self._dependencyInjected() { container in
+      container.register(Interface.self) { _ in
+        return implementation()
+      }.inObjectScope(.graph)
+      return container
+    }
+  }
+  
+  public func injectionContainer<Interface>(
+    _ interfaceType: Interface.Type,
     implementation: Interface
   ) {
     self._dependencyInjected() { container in
       container.register(Interface.self) { _ in
         return implementation
-      }
+      }.inObjectScope(.graph)
       return container
     }
   }

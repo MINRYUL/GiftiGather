@@ -16,12 +16,16 @@ public struct FilterViewModelInput {
   public let storeFilter: AnyObserver<String?>
   public let didSelectIndex: AnyObserver<IndexPath>
   public let didTouchConfirm: AnyObserver<Void>
+  public let didTouchDelete: AnyObserver<Void>
 }
 
 public struct FilterViewModelOutput {
   public let filterDataSource: Driver<[FilterCellModel]>
   public let noDataSource: Driver<[NoDataCellModel]>
-  public let updateItem: Driver<FilterCellModel?>
+  public let updateItems: Driver<[FilterCellModel]?>
+  public let isDeleteMode: Driver<Bool>
+  public let didDeleteFilters: Driver<[UUID]>
+  public let didDeleteNoData: Driver<[UUID]>
   public let error: Driver<String>
   public let confirm: Driver<[String]>
 }

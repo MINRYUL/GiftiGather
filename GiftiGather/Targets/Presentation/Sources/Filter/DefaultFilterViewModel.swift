@@ -29,11 +29,15 @@ public struct DefaultFilterViewModel: FilterViewModel {
   private let _storeFilter = BehaviorSubject<String?>(value: nil)
   private let _didSelectIndex = PublishSubject<IndexPath>()
   private let _didTouchConfirm = PublishSubject<Void>()
+  private let _didTouchDelete = PublishSubject<Void>()
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[FilterCellModel]>(value: [])
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
-  private let _updateItem = PublishSubject<FilterCellModel?>()
+  private let _updateItems = PublishSubject<[FilterCellModel]?>()
+  private let _isDeleteMode = BehaviorSubject<Bool>(value: false)
+  private let _didDeleteFilters = PublishSubject<[UUID]>()
+  private let _didDeleteNoData = PublishSubject<[UUID]>()
   private let _error = PublishSubject<String>()
   private let _confirm = PublishSubject<[String]>()
   
@@ -46,13 +50,17 @@ public struct DefaultFilterViewModel: FilterViewModel {
       getFilter: self._getFilter.asObserver(),
       storeFilter: self._storeFilter.asObserver(),
       didSelectIndex: self._didSelectIndex.asObserver(),
-      didTouchConfirm: self._didTouchConfirm.asObserver()
+      didTouchConfirm: self._didTouchConfirm.asObserver(),
+      didTouchDelete: self._didTouchDelete.asObserver()
     )
     
     self.output = FilterViewModelOutput(
       filterDataSource: self._filterDataSource.asDriver(onErrorJustReturn: []),
       noDataSource: self._noDataSource.asDriver(onErrorJustReturn: []),
-      updateItem: self._updateItem.asDriver(onErrorJustReturn: nil),
+      updateItems: self._updateItems.asDriver(onErrorJustReturn: nil),
+      isDeleteMode: self._isDeleteMode.asDriver(onErrorJustReturn: false),
+      didDeleteFilters: self._didDeleteFilters.asDriver(onErrorJustReturn: []),
+      didDeleteNoData: self._didDeleteNoData.asDriver(onErrorJustReturn: []),
       error: self._error.asDriver(onErrorJustReturn: String()),
       confirm: self._confirm.asDriver(onErrorJustReturn: [])
     )
@@ -61,6 +69,7 @@ public struct DefaultFilterViewModel: FilterViewModel {
     self._bindStoreFilter()
     self._bindDidSelectIndex()
     self._bindDidTouchConfirm()
+    self._bindDidTouchDelete()
   }
 }
 
@@ -70,6 +79,7 @@ extension DefaultFilterViewModel {
     self._getFilter
       .subscribe(onNext: {
         let result = self._fetchFilter.fetchFilter()
+        let isDeleteMode = (try? self._isDeleteMode.value()) ?? false
         
         switch result {
           case .success(let response):
@@ -82,7 +92,8 @@ extension DefaultFilterViewModel {
               return FilterCellModel(
                 identity: UUID(),
                 filter: $0,
-                isCheck: false
+                isCheck: false,
+                isDeleteMode: isDeleteMode
               )
             }
             self._storeDataSource.accept(filterList)
@@ -99,7 +110,10 @@ extension DefaultFilterViewModel {
     self._storeFilter
       .compactMap { $0 }
       .subscribe(onNext: { filter in
+        if filter.isEmpty { return }
+        
         var filterList: [FilterCellModel] = self._storeDataSource.value
+        let isDeleteMode = (try? self._isDeleteMode.value()) ?? false
         
         for filterInfo in filterList {
           if filterInfo.filter == filter {
@@ -115,12 +129,20 @@ extension DefaultFilterViewModel {
             let filterCellModel = FilterCellModel(
               identity: UUID(),
               filter: filter,
-              isCheck: false
+              isCheck: false,
+              isDeleteMode: isDeleteMode
             )
             filterList.append(filterCellModel)
             self._storeDataSource.accept(filterList)
             self._filterDataSource.onNext([filterCellModel])
 
+            guard let noDataSource = try? self._noDataSource.value(),
+                  let noData = noDataSource.first else {
+              return
+            }
+            
+            self._didDeleteNoData.onNext([noData.identity])
+            
           case .failure(_): return
         }
       })
@@ -129,7 +151,8 @@ extension DefaultFilterViewModel {
   
   private func _bindDidSelectIndex() {
     self._didSelectIndex
-      .map { indexPath -> FilterCellModel? in
+      .map { indexPath -> [FilterCellModel] in
+        let isDeleteMode = (try? self._isDeleteMode.value()) ?? false
         var dataSource = self._storeDataSource.value
         var filterCellModel: FilterCellModel?
         
@@ -139,7 +162,8 @@ extension DefaultFilterViewModel {
               let changeItem = FilterCellModel(
                 identity: item.identity,
                 filter: item.filter,
-                isCheck: !item.isCheck
+                isCheck: !item.isCheck,
+                isDeleteMode: isDeleteMode
               )
               filterCellModel = changeItem
               return changeItem
@@ -148,21 +172,74 @@ extension DefaultFilterViewModel {
         }
         
         self._storeDataSource.accept(dataSource)
-        return filterCellModel
+        return [filterCellModel].compactMap { $0 }
       }
       .compactMap { $0 }
-      .bind(to: _updateItem)
+      .bind(to: _updateItems)
       .disposed(by: disposeBag)
   }
   
   private func _bindDidTouchConfirm() {
-    self._confirm
-      .map { _ -> [String] in
-        return self._storeDataSource.value.map { item -> String in
-          return item.filter
+    self._didTouchConfirm
+      .map { _ -> [String]? in
+        guard let isDeleteMode = try? self._isDeleteMode.value() else { return [] }
+        switch isDeleteMode {
+          case true:
+            let resultDataSource = self._storeDataSource.value.filter { item in
+              return !item.isCheck
+            }
+            
+            let removeList = self._storeDataSource.value.filter { item  in
+              return item.isCheck
+            }.map { $0.filter }
+            
+            let uuidList = self._storeDataSource.value.filter { item  in
+              return item.isCheck
+            }.map { $0.identity }
+            
+            removeList.forEach { remove in
+              let _ = self._deleteFilter.deleteFilter(requestValue: remove)
+            }
+            self._storeDataSource.accept(resultDataSource)
+            self._didDeleteFilters.onNext(uuidList)
+            
+            if resultDataSource.isEmpty {
+              self._noDataSource.onNext([NoDataCellModel(titleKey: "noFilter")])
+            }
+            
+            return nil
+            
+          case false:
+            return self._storeDataSource.value.map { item -> String in
+              return item.filter
+            }
         }
       }
+      .compactMap { $0 }
       .bind(to: self._confirm)
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidTouchDelete() {
+    self._didTouchDelete
+      .map { _ -> Bool in
+        guard let isDeleteMode = try? self._isDeleteMode.value() else { return false }
+        let dataSource = self._storeDataSource.value
+        
+        let updateItems = dataSource.map {
+          return FilterCellModel(
+            identity: $0.identity,
+            filter: $0.filter,
+            isCheck: $0.isCheck,
+            isDeleteMode: !isDeleteMode
+          )
+        }
+        
+        self._storeDataSource.accept(updateItems)
+        self._updateItems.onNext(updateItems)
+        return !isDeleteMode
+      }
+      .bind(to: _isDeleteMode)
       .disposed(by: disposeBag)
   }
 }

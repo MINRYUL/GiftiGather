@@ -63,7 +63,6 @@ final class FilterViewController: BaseViewController {
   
   lazy var confirmContainerView: UIView = {
     let view = UIView()
-    view.backgroundColor = .background
     view.translatesAutoresizingMaskIntoConstraints = false
     view.layer.cornerRadius = 10
     view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
@@ -107,6 +106,9 @@ final class FilterViewController: BaseViewController {
     self._bindNoDataDataSource()
     self._bindUpdateItem()
     self._bindError()
+    self._bindDidTouchDelete()
+    self._bindDidDeleteFilters()
+    self._bindDidDeleteNoData()
     
     self._viewModel.input.getFilter.onNext(())
   }
@@ -186,8 +188,10 @@ extension FilterViewController {
           preferredStyle: .alert
         )
         
-        controller.addTextField { field in
+        controller.addTextField { [weak self] field in
+          guard let self = self else { return }
           field.borderStyle = .none
+          field.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
         }
         
         let okAction = UIAlertAction(title: "confirm".localized(), style: .default) { action in
@@ -205,6 +209,7 @@ extension FilterViewController {
       title: "delete".localized(),
       style: UIAlertAction.Style.destructive,
       handler: { [weak self] _ in
+        self?._viewModel.input.didTouchDelete.onNext(())
       }
     )
     
@@ -254,11 +259,13 @@ extension FilterViewController {
   }
   
   private func _bindUpdateItem() {
-    self._viewModel.output.updateItem
+    self._viewModel.output.updateItems
       .compactMap { $0 }
-      .drive(onNext: { [weak self] item in
-        self?._filterDataSourceMap[item.identity] = item
-        self?._dataSourceManage?.reconfigureItems(items: [item.identity])
+      .drive(onNext: { [weak self] items in
+        items.forEach { item in
+          self?._filterDataSourceMap[item.identity] = item
+          self?._dataSourceManage?.reconfigureItems(items: [item.identity])
+        }
       })
       .disposed(by: disposeBag)
   }
@@ -275,7 +282,56 @@ extension FilterViewController {
     self._viewModel.output.confirm
       .drive(onNext: { [weak self] filter in
         self?.delegate?.didSelectFilter(filters: filter)
+        self?.dismiss(animated: true)
       })
       .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidTouchDelete() {
+    self._viewModel.output.isDeleteMode
+      .drive(onNext: { [weak self] isDeleteMode in
+        UIView.animate(withDuration: 0.5, animations: {
+          switch isDeleteMode {
+            case true:
+              self?.confirmButton.setTitle("delete".localized(), for: .normal)
+              self?.confirmButton.backgroundColor = .systemRed
+            case false:
+              self?.confirmButton.setTitle("confirm".localized(), for: .normal)
+              self?.confirmButton.backgroundColor = .systemBlue
+          }
+        })
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidDeleteFilters() {
+    self._viewModel.output.didDeleteFilters
+      .drive(onNext: { [weak self] filters in
+        filters.forEach { filter in
+          self?._filterDataSourceMap[filter] = nil
+        }
+        self?._dataSourceManage?.deleteItems(items: filters)
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  private func _bindDidDeleteNoData() {
+    self._viewModel.output.didDeleteNoData
+      .drive(onNext: { [weak self] noData in
+        noData.forEach { identity in
+          self?._noDataSourceMap[identity] = nil
+        }
+        self?._dataSourceManage?.deleteItems(items: noData)
+      })
+      .disposed(by: disposeBag)
+  }
+}
+
+//MARK: - objc
+extension FilterViewController {
+  @objc private func textFieldDidChange(_ textField: UITextField) {
+    if let text = textField.text, text.count > 10 {
+      textField.deleteBackward()
+    }
   }
 }

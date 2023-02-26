@@ -40,10 +40,13 @@ final class FilterCell: BaseCollectionViewCell {
     guard let cellModel = cellModel else { return }
     self._titleLabel.text = cellModel.filter
     
+    let borderColor = cellModel.isDeleteMode ? UIColor.systemRed.cgColor : UIColor.systemBlue.cgColor
+    let textColor = cellModel.isDeleteMode ? UIColor.systemRed : UIColor.systemBlue
+    
     switch cellModel.isCheck {
       case true:
-        self._containerView.layer.borderColor = UIColor.systemBlue.cgColor
-        self._titleLabel.textColor = .systemBlue
+        self._containerView.layer.borderColor = borderColor
+        self._titleLabel.textColor = textColor
       case false:
         self._containerView.layer.borderColor = UIColor.systemGray.cgColor
         self._titleLabel.textColor = .label
