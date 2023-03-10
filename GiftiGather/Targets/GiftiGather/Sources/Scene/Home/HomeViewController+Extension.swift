@@ -11,7 +11,8 @@ import UIKit
 extension HomeViewController {
   func configureUI() {
     self.navigationController?.navigationBar.prefersLargeTitles = true
-    self.navigationItem.largeTitleDisplayMode = .never
+    self.navigationController?.navigationBar.isTranslucent = true
+//    self.navigationItem.largeTitleDisplayMode = .never
     self.title = "Home".localized()
     
     self.view.backgroundColor = .systemBackground

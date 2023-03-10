@@ -27,11 +27,13 @@ public struct DefaultHomeViewModel: HomeViewModel {
   private let _selectedImageIdentifers = PublishSubject<[String]>()
   private let _getGiftiCon = PublishSubject<Void>()
   private let _selectedFilterList = BehaviorSubject<[String]>(value: [])
+  private let _selectedGifti = PublishSubject<IndexPath>()
   
   //MARK: - Output
   private let _filterDataSource = BehaviorSubject<[HomeFilterCellModel]>(value: [])
   private let _photoDataSource = BehaviorSubject<[HomePhotoCellModel]>(value: [])
   private let _noDataSource = BehaviorSubject<[NoDataCellModel]>(value: [])
+  private let _confirmSelect = PublishSubject<(IndexPath, String)?>()
   private let _didDeleteNoData = PublishSubject<[UUID]>()
   private let _error = PublishSubject<Void>()
   
@@ -42,13 +44,15 @@ public struct DefaultHomeViewModel: HomeViewModel {
     self.input = HomeViewModelInput(
       selectedImageIdentifers: self._selectedImageIdentifers.asObserver(),
       getGiftiCon: self._getGiftiCon.asObserver(),
-      selectedFilterList: self._selectedFilterList.asObserver()
+      selectedFilterList: self._selectedFilterList.asObserver(),
+      selectedGifti: self._selectedGifti.asObserver()
     )
     
     self.output = HomeViewModelOutput(
       filterDataSource: self._filterDataSource.asDriver(onErrorJustReturn: []),
       photoDataSource: self._photoDataSource.asDriver(onErrorJustReturn: []),
       noDataSource: self._noDataSource.asDriver(onErrorJustReturn: []),
+      confirmSelect: self._confirmSelect.asDriver(onErrorJustReturn: nil),
       didDeleteNoData: self._didDeleteNoData.asDriver(onErrorJustReturn: []),
       error: self._error.asDriver(onErrorJustReturn: ())
     )
@@ -57,6 +61,7 @@ public struct DefaultHomeViewModel: HomeViewModel {
     
     self._bindSelectedImageIdentifer()
     self._bindGetGiftiCon()
+    self._bindSelectedGifti()
   }
 }
 
@@ -107,12 +112,15 @@ extension DefaultHomeViewModel {
               return nil
             }
             
-            return response.map { info -> HomePhotoCellModel in
+            let dataSource = response.map { info -> HomePhotoCellModel in
               return HomePhotoCellModel(
                 identity: UUID(),
                 photoLocalIentifier: info.identifier
               )
             }
+            
+            self._storePhotoDataSource.accept(dataSource)
+            return dataSource
             
           case .failure(_):
             self._error.onNext(())
@@ -126,6 +134,22 @@ extension DefaultHomeViewModel {
   
   private func _bindSelectedFilterList() {
 //    self._selectedFilterList
+  }
+  
+  private func _bindSelectedGifti() {
+    self._selectedGifti
+      .map { indexPath -> (IndexPath, String)? in
+        let dataSource = self._storePhotoDataSource.value
+        
+        if dataSource.isEmpty,
+           dataSource.count <= indexPath.item {
+          return nil
+        }
+        
+        return (indexPath, dataSource[indexPath.item].photoLocalIentifier)
+      }
+      .bind(to: self._confirmSelect)
+      .disposed(by: disposeBag)
   }
 }
 

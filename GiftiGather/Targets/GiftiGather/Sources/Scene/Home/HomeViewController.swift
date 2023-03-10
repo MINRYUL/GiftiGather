@@ -7,10 +7,10 @@
 //
 
 import UIKit
+import Photos
+
 import DIContainer
 import Presentation
-
-import Photos
 
 import RxSwift
 import RxCocoa
@@ -23,10 +23,18 @@ enum HomeFilterSection: Int, CaseIterable {
   case filter
 }
 
-final class HomeViewController: BaseViewController {
+final class HomeViewController: BaseViewController, SourceTransitionViewController {
   //MARK: - Typealias
   typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, UUID>
   typealias HomeFilterDataSource = UICollectionViewDiffableDataSource<HomeFilterSection, UUID>
+  
+  var fromView: UIView {
+    guard let cell = self.collectionView.cellForItem(at: self._selectedIndexPath) else {
+      return UIView()
+    }
+    
+    return cell
+  }
   
   //MARK: - View
   lazy var collectionView: UICollectionView = {
@@ -34,6 +42,7 @@ final class HomeViewController: BaseViewController {
     let collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: flowLayout)
     collectionView.translatesAutoresizingMaskIntoConstraints = false
     collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 70, right: 0)
+    collectionView.delaysContentTouches = false
     return collectionView
   }()
   
@@ -92,6 +101,8 @@ final class HomeViewController: BaseViewController {
   //MARK: - Injection
   @Injected private var _viewModel: HomeViewModel
   
+  private var _selectedIndexPath: IndexPath = IndexPath()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -103,6 +114,7 @@ final class HomeViewController: BaseViewController {
     
     self._bindFilterDataSource()
     self._bindPhotoDataSource()
+    self._bindConfirmSelect()
     self._bindNoDataSource()
     self._bindDidDeleteNoData()
     
@@ -185,6 +197,14 @@ final class HomeViewController: BaseViewController {
     collectionView.dataSource = dataSource
     
     collectionView.delegate = self
+    
+    collectionView.rx.itemSelected
+      .asDriver()
+      .drive(onNext: { [weak self] indexPath in
+        guard let self = self else { return }
+        self._viewModel.input.selectedGifti.onNext(indexPath)
+      })
+      .disposed(by: disposeBag)
     
     collectionView.rx.itemHighlighted
       .asDriver()
@@ -319,6 +339,23 @@ extension HomeViewController {
       .disposed(by: disposeBag)
   }
   
+  private func _bindConfirmSelect() {
+    self._viewModel.output.confirmSelect
+      .compactMap { $0 }
+      .drive(onNext: { [weak self] (indexPath, ientifier) in
+        guard let self = self else { return }
+        let detailViewController = DetailGiftiViewController(giftiIdentifier: ientifier)
+        self._selectedIndexPath = indexPath
+              
+        detailViewController.transitioningDelegate = self
+        detailViewController.modalPresentationStyle = .custom
+
+        self.present(detailViewController, animated: true)
+
+      })
+      .disposed(by: disposeBag)
+  }
+  
   private func _bindDidDeleteNoData() {
     self._viewModel.output.didDeleteNoData
       .drive(onNext: { [weak self] noData in
@@ -381,5 +418,39 @@ extension HomeViewController: UICollectionViewDelegate {
     _ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath
   ) {
     UICollectionView.itemUnhighlighted(collecionView: collectionView, indexPath: indexPath)
+  }
+}
+
+
+extension HomeViewController: UIViewControllerTransitioningDelegate {
+  func animationController(
+    forPresented presented: UIViewController,
+    presenting: UIViewController,
+    source: UIViewController
+  ) -> UIViewControllerAnimatedTransitioning? {
+    guard let destinationViewController = presented as? DestinationTransitionViewController else {
+      return nil
+    }
+    
+    return PresentAnimator(
+      presenting: self,
+      presented: destinationViewController,
+      duration: 0.5
+    )
+  }
+  
+  func animationController(
+    forDismissed dismissed: UIViewController
+  ) -> UIViewControllerAnimatedTransitioning? {
+    return nil
+//    guard let destinationViewController = dismissed as? DestinationTransitionViewController else {
+//      return nil
+//    }
+    
+//    return DismissAnimator(
+//      presenting: self,
+//      presented: destinationViewController,
+//      duration: 1
+//    )
   }
 }

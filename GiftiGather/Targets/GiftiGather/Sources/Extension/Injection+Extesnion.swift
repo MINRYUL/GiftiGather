@@ -42,7 +42,6 @@ extension Injection {
     )
     
     //MARK: - Presentation
-    
     self.injectionContainer(
       HomeViewModel.self, implementation: { DefaultHomeViewModel() }
     )
@@ -52,6 +51,8 @@ extension Injection {
     self.injectionContainer(
       FilterViewModel.self, implementation: { DefaultFilterViewModel() }
     )
-    
+    self.injectionContainer(
+      DetailGiftiViewModel.self, implementation: { DefaultDetailGiftiViewModel() }
+    )
   }
 }

@@ -13,7 +13,7 @@ import Photos
 import RxSwift
 
 final class HomePhotoCell: BaseCollectionViewCell {
-  private var _imageView: UIImageView = {
+  var imageView: UIImageView = {
     let imageView = UIImageView()
     imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFill
@@ -33,19 +33,19 @@ final class HomePhotoCell: BaseCollectionViewCell {
   
   func display(cellModel: HomePhotoCellModel?) {
     guard let cellModel = cellModel else { return }
-    self._imageView.setImage(with: cellModel.photoLocalIentifier, disposeBag: _disposeBag)
+    self.imageView.setImage(with: cellModel.photoLocalIentifier, disposeBag: _disposeBag)
   }
 }
 
 extension HomePhotoCell {
   private func _configureUI() {
-    self.contentView.addSubview(_imageView)
+    self.contentView.addSubview(imageView)
     
     NSLayoutConstraint.activate([
-      self._imageView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-      self._imageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-      self._imageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-      self._imageView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
+      self.imageView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+      self.imageView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+      self.imageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+      self.imageView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
     ])
   }
 }
