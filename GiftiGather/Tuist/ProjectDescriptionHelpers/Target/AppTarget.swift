@@ -8,7 +8,7 @@
 import ProjectDescription
 
 public struct AppTarget {
-  public static var deploymentVersion: String = "15.0"
+  public static var deploymentVersion: String = "17.0"
   
   private let _target: TargetInterface
   

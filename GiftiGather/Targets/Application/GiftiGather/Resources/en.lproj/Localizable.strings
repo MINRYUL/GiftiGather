@@ -6,7 +6,7 @@
   
 */
 //MARK: - Basic
-"Home" = "Home";
+"home" = "Home";
 "filter" = "Filter";
 "add" = "add";
 "delete" = "remove";

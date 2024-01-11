@@ -7,7 +7,7 @@
 */
 
 //MARK: - Basic
-"Home" = "홈";
+"home" = "홈";
 "filter" = "필터";
 "add" = "추가";
 "delete" = "삭제";

@@ -13,7 +13,7 @@ extension HomeViewController {
     self.navigationController?.navigationBar.prefersLargeTitles = true
     self.navigationController?.navigationBar.isTranslucent = true
 //    self.navigationItem.largeTitleDisplayMode = .never
-    self.title = "Home".localized()
+    self.title = "home".localized()
     
     self.view.backgroundColor = .systemBackground
     self.view.addSubview(self.filterCollectionView)

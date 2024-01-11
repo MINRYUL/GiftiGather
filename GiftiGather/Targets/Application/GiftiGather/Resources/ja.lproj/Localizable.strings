@@ -7,7 +7,7 @@
 */
 
 //MARK: - Basic
-"Home" = "ホーム";
+"home" = "ホーム";
 "filter" = "フィルタ";
 "add" = "追加";
 "delete" = "消去";

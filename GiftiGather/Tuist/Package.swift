@@ -11,10 +11,6 @@ let package = Package(
         .package(
           url: "https://github.com/Swinject/Swinject.git",
           .upToNextMajor(from: "2.8.0")
-        ),
-        .package(
-          url: "https://github.com/pointfreeco/swift-composable-architecture",
-          .upToNextMajor(from: "1.6.0")
         )
     ]
 )
